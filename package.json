@@ -1,0 +1,31 @@
+{
+  "name": "TeclaTicket1",
+  "version": "1.0.0",
+  "description": "Paquetes utilizados en el desarrollo:\r - express\r - dotenv\r - nodemon\r - node-fetch\r - cors\r - sequelize\r - tedious\r - joi\r - jsonwebtoken",
+  "main": "./Backend/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PabGP-Rep/TeclaTicket1.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PabGP-Rep/TeclaTicket1/issues"
+  },
+  "homepage": "https://github.com/PabGP-Rep/TeclaTicket1#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "joi": "^17.4.2",
+    "jsonwebtoken": "^8.5.1",
+    "node-fetch": "^2.6.1",
+    "nodemon": "^2.0.12",
+    "sequelize": "^6.6.5",
+    "tedious": "^11.4.0"
+  }
+}
