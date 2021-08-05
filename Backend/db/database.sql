@@ -23,8 +23,7 @@ CREATE TABLE Presupuestos(
 CREATE TABLE Meses(
   id INT NOT NULL IDENTITY(1,1),
   idPresupuesto INT NOT NULL,
-  inicial BIT NOT NULL,
-  contraseña VARCHAR(20) NOT NULL,
+  inicial BIT NOT NULL,  
   nombre VARCHAR(20) NOT NULL,
   PRIMARY KEY(id),
   FOREIGN KEY(idPresupuesto) REFERENCES Presupuestos
@@ -33,7 +32,7 @@ CREATE TABLE Meses(
 CREATE TABLE Ingresos(
   id INT NOT NULL IDENTITY(1,1),
   idMes INT NOT NULL,
-  concepto BIT NOT NULL,
+  concepto VARCHAR(50) NOT NULL,
   cantidad FLOAT NOT NULL,
   PRIMARY KEY(id),
   FOREIGN KEY(idMes) REFERENCES Meses

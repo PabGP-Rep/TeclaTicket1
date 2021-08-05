@@ -1,0 +1,15 @@
+img{
+  width: 40px;
+  height: 40px;
+  padding-left: 0;
+}
+
+#tablas{
+  margin-left: 50px;
+  margin-right: 180px;
+}
+
+body{
+  background-image: url(../assets/images/bg2.jpg); 
+  background-size: 100%;
+}

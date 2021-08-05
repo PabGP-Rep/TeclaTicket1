@@ -5,5 +5,6 @@ module.exports = (app) => {
 
   app.post('/usuario/crear', usuarioExiste, crearUsuario);
 
+  //app.post('/usuario/login', usuarioExiste, crearUsuario);
 
 }
