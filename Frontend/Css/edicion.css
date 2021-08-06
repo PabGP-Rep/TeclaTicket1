@@ -17,3 +17,7 @@ h3{
   padding-top: 20px;
   color: aliceblue;
 }
+
+input[type='number']{
+  width: 120px;
+} 

@@ -15,7 +15,7 @@ CREATE TABLE Presupuestos(
   idUsuario INT NOT NULL,
   fechaCreacion DATE NOT NULL,
   proyecto VARCHAR(max) NOT NULL,
-  version VARCHAR(10) NOT NULL,
+  versionn VARCHAR(10) NOT NULL,
   PRIMARY KEY(id),
   FOREIGN KEY(idUsuario) REFERENCES Usuarios
 )
@@ -25,6 +25,7 @@ CREATE TABLE Meses(
   idPresupuesto INT NOT NULL,
   inicial BIT NOT NULL,  
   nombre VARCHAR(20) NOT NULL,
+  cantidad FLOAT NOT NULL,
   PRIMARY KEY(id),
   FOREIGN KEY(idPresupuesto) REFERENCES Presupuestos
 )
