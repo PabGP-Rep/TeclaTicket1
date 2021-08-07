@@ -60,19 +60,19 @@ export class FlujoDeEfectivo{
       <tbody id="contenido-tabla">
         <tr>
           <th style="width: 10%;">Ingresos</th>
-          <td style="width: 20%;"></td>        
+          <td id="sumaIngresos" style="width: 20%;">[sumaIngresos]</td>        
         </tr>
         <tr>
           <th style="width: 10%;">Egresos</th>
-          <td style="width: 20%;"></td>
+          <td id="sumaEgresos" style="width: 20%;">[sumaEgresos]</td>
         </tr>
         <tr>
           <th style="width: 10%;">Total</th>
-          <td style="width: 20%;"></td>
+          <td id="sumaTotal"style="width: 20%;">[sumaTotal]</td>
         </tr>
         <tr>
           <th style="width: 10%;">Acumulado</th>
-          <td style="width: 20%;"></td>
+          <td style="width: 20%;">Nada</td>
         </tr>
       </tbody>
     </table>
@@ -173,19 +173,19 @@ export class EstadoDeResultados{
       <tbody id="contenido-tabla">
         <tr>
           <th style="width: 10%;">Ventas</th>
-          <td style="width: 20%;"></td>
+          <td id="sumaVentas" style="width: 20%;">[sumaVentas]</td>
         </tr>
         <tr>
           <th style="width: 10%;">Costos</th>
-          <td style="width: 20%;"></td>
+          <td id="sumaCostos" style="width: 20%;">[sumaCostos]</td>
         </tr>
         <tr>
           <th style="width: 10%;">Margen</th>
-          <td style="width: 20%;"></td>
+          <td id="sumaMargen" style="width: 20%;">[sumaMargen]</td>
         </tr>
         <tr>
           <th style="width: 10%;">Saldo Final</th>
-          <td style="width: 20%;"></td>
+          <td style="width: 20%;">NADA</td>
         </tr>
       </tbody>
     </table>
@@ -247,6 +247,7 @@ export class EstadoDeResultados{
 
 export class Ingresos{
   mesActual = null;
+  focusActual = null;
 
   crearIngresos(){
     let tabla = document.getElementById('Ingresos');
@@ -263,7 +264,7 @@ export class Ingresos{
       <tbody id="contenido-tabla">
         <tr>
           <th style="width: 10%;">Total</th>
-          <td style="width: 20%;"></td>
+          <td id="sumaTotal" style="width: 20%;">[sumaTotal]</td>
         </tr>
       </tbody>
     </table>
@@ -276,39 +277,69 @@ export class Ingresos{
 
   agregarColumnaInicial(numeroMesInicial){
     this.mesActual = numeroMesInicial;
+    let ingresosColumna = [];
     let mes = listaMeses[this.mesActual];
     let tabla = document.getElementById('Ingresos');
-    let filas = tabla.querySelectorAll('tr');
-    filas.forEach((element, index) => {
-      let celda = element.insertCell(element.querySelectorAll('td').length);
+    let filas = tabla.querySelectorAll('tr');    
+    let numFilas = filas.length;
+    let celdas = filas[0].querySelectorAll('td').length;
+    
+    filas.forEach((element, index) => {  
+      let celda = element.insertCell(celdas);
       celda.setAttribute('id',`celda${mes}${index}`);
       if (index == 0) {
         celda.textContent = mes;
+      }else if (index != numFilas-1){
+        let concepto = element.querySelector('th').className;
+        let ingreso = { "idMes": celdas, "concepto": concepto, "cantidad": 0 };
+        ingresosColumna.push(ingreso);
+        let imp = document.createElement('input');
+        imp.setAttribute('type','number');
+        imp.setAttribute('id',`input${concepto}${celdas}`);
+        imp.value = 0;
+        imp.addEventListener('change', realizarCalculos);
+        celda.appendChild(imp);        
+      }else{
+        celda.textContent = `[total${mes}]`;
       }
-      if (index == 1){
-        
-      }      
     });
     this.mesActual ++;
-    if (this.mesActual >= 12) { this.mesActual = 0; }  
+    if (this.mesActual >= 12) { this.mesActual = 0; } 
+    return ingresosColumna;
   }
 
-  agregarColumna(){ 
+  agregarColumna(){
     let mes = listaMeses[this.mesActual];
+    let ingresosColumna = [];
     let tabla = document.getElementById('Ingresos');
     let filas = tabla.querySelectorAll('tr');
+    let numFilas = filas.length;
+    let celdas = filas[0].querySelectorAll('td').length
+
     filas.forEach((element, index) => {
-      let celda = element.insertCell(element.querySelectorAll('td').length);
+      //console.log("agregandooo en"+celdas);
+      let celda = element.insertCell(celdas);
       celda.setAttribute('id',`celda${mes}${index}`);
       if (index == 0) {
         celda.textContent = mes;
+      }else if (index != numFilas-1){  
+        let concepto = element.querySelector('th').className;
+        let ingreso = { "idMes": celdas, "concepto": concepto, "cantidad": 0 };
+        ingresosColumna.push(ingreso);
+        let imp = document.createElement('input');
+        imp.setAttribute('type','number');
+        imp.setAttribute('id',`input${concepto}${celdas}`);
+        imp.value = 0;
+        imp.addEventListener('change', realizarCalculos);
+        celda.appendChild(imp);        
+      }else{
+        celda.textContent = `[total${mes}]`;
       }
-      if (index == 1){
-        
-      }      
+         
     });
     this.mesActual ++;
-    if (this.mesActual >= 12) { this.mesActual = 0; }  
+    if (this.mesActual >= 12) { this.mesActual = 0; }
+    return ingresosColumna; 
   }
 
   eliminarColumna(){
@@ -324,16 +355,53 @@ export class Ingresos{
     if (this.mesActual < 0) { this.mesActual = 11; }
   }
 
-  agregarFila(){
-    let tabla = document.getElementById('tablaIngresos');  
+  agregarFila(concepto, cantidad){
+    let ingresosFila = [];
+    let tabla = document.getElementById('tablaIngresos');
     let filas = tabla.querySelectorAll('tr');
     let numFilas = filas.length;
-    let nuevaFila = tabla.insertRow(numFilas-1);
+    let nuevaFila = tabla.insertRow(numFilas-1);    
+    nuevaFila.setAttribute('class',`concepto_${concepto}`);
     let columnas = filas[0].querySelectorAll('td').length
-    for (let index = 0; index <= columnas; index++) {
-      nuevaFila.insertCell(0);      
-    } 
-    
+    for (let index = 0; index <= columnas; index++) {      
+      if (index == 0) {
+        let celda = document.createElement('th');
+        celda.setAttribute('class',`${concepto}`);
+        let vista = '';
+        vista += `          
+          <input type="radio" class="btn-check" name="conceptos" id="${concepto}" autocomplete="off">
+          <label class="btn btn-outline-primary" for="${concepto}">${concepto}</label>    
+        `;        
+        celda.innerHTML = vista; 
+        nuevaFila.appendChild(celda);
+        let boton = document.getElementById(concepto);
+        boton.addEventListener('change', () =>{
+          this.focusActual = concepto;
+        });
+      }
+      else if(index != columnas){
+        let ingreso = { "idMes": index, "concepto": concepto, "cantidad": cantidad };
+        ingresosFila.push(ingreso);
+        let celda = nuevaFila.insertCell(index);
+        let imp = document.createElement('input');
+        imp.setAttribute('type','number');
+        imp.setAttribute('id',`input${concepto}${index}`);
+        imp.value = cantidad;
+        imp.addEventListener('change', realizarCalculos);
+        celda.appendChild(imp);
+      }else{
+        let celda = nuevaFila.insertCell(index);
+        celda.textContent = `[suma${concepto}]`
+      }            
+    }
+    return ingresosFila;
   }
 
+  eliminarFila(concepto){
+    let tabla = document.getElementById("tablaIngresos");
+    let fila = document.querySelector(`.concepto_${concepto}`);
+    //console.log("indice: "+fila.rowIndex);
+    tabla.deleteRow(fila.rowIndex);
+    this.focusActual = null;
+  }
 }
