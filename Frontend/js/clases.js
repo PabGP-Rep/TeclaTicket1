@@ -9,7 +9,7 @@ function realizarCalculos(a){
 export class ResumenFinanciero{
 
   crearResumenFinanciero(){
-    let tabla = document.getElementById('ResumenFinanciero');
+    let seccion = document.getElementById('ResumenFinanciero');
     let vista = ``;
     vista += `
     <h3>Resumen Financiero</h3>
@@ -36,7 +36,7 @@ export class ResumenFinanciero{
       </tbody>
     </table>  
     `;
-    tabla.innerHTML = vista;
+    seccion.innerHTML = vista;
   }
 
 }
@@ -46,7 +46,7 @@ export class FlujoDeEfectivo{
    mesActual = null;
 
   crearFlujoDeEfectivo(){
-    let tabla = document.getElementById('FlujoDeEfectivo');
+    let seccion = document.getElementById('FlujoDeEfectivo');
     let vista = ``;
     vista += `
     <h3>Flujo de Efectivo</h3>
@@ -81,7 +81,7 @@ export class FlujoDeEfectivo{
     <button class="btn btn-danger" type="button" role="button" style="margin-bottom: 15px;" id="botonEliminarMes">Eliminar Columna</button>
   
   `;
-    tabla.innerHTML = vista;
+  seccion.innerHTML = vista;
   }
 
   agregarColumnaInicial(idPresupuesto, numeroMesInicial, cantidad){
@@ -159,7 +159,7 @@ export class EstadoDeResultados{
   mesActual = null;
 
   crearEstadoDeResultados(){
-    let tabla = document.getElementById('EstadoDeResultados');
+    let seccion = document.getElementById('EstadoDeResultados');
     let vista = ``;
     vista += `
     <h3>Estado de Resultados</h3>
@@ -190,7 +190,7 @@ export class EstadoDeResultados{
       </tbody>
     </table>
     `;
-    tabla.innerHTML = vista;  
+    seccion.innerHTML = vista;  
   }
 
   agregarColumnaInicial(numeroMesInicial){
@@ -250,7 +250,7 @@ export class Ingresos{
   focusActual = null;
 
   crearIngresos(){
-    let tabla = document.getElementById('Ingresos');
+    let seccion = document.getElementById('Ingresos');
     let vista = ``;
     vista += `
     <h3>Ingresos</h3>
@@ -258,7 +258,7 @@ export class Ingresos{
       <thead>
         <tr>
           <th scope="col" style="width: 4%;"></th>
-          <td scope="col">Sumatoria</th>    
+          <td scope="col">Sumatoria</td>    
         </tr>
       </thead>
       <tbody id="contenido-tabla">
@@ -272,14 +272,14 @@ export class Ingresos{
     <button class="btn btn-success" type="button" role="button" id="botonAgregarIngreso" style="margin-bottom: 15px;">Agregar Fila</button>
     <button class="btn btn-danger" type="button" role="button"  id="botonEliminarIngreso" style="margin-bottom: 15px;">Eliminar Fila</button>    
     `;
-    tabla.innerHTML = vista;
+    seccion.innerHTML = vista;
   }
 
   agregarColumnaInicial(numeroMesInicial){
     this.mesActual = numeroMesInicial;
     let ingresosColumna = [];
     let mes = listaMeses[this.mesActual];
-    let tabla = document.getElementById('Ingresos');
+    let tabla = document.getElementById('tablaIngresos');
     let filas = tabla.querySelectorAll('tr');    
     let numFilas = filas.length;
     let celdas = filas[0].querySelectorAll('td').length;
@@ -311,7 +311,7 @@ export class Ingresos{
   agregarColumna(){
     let mes = listaMeses[this.mesActual];
     let ingresosColumna = [];
-    let tabla = document.getElementById('Ingresos');
+    let tabla = document.getElementById('tablaIngresos');
     let filas = tabla.querySelectorAll('tr');
     let numFilas = filas.length;
     let celdas = filas[0].querySelectorAll('td').length
@@ -401,6 +401,505 @@ export class Ingresos{
     let tabla = document.getElementById("tablaIngresos");
     let fila = document.querySelector(`.concepto_${concepto}`);
     //console.log("indice: "+fila.rowIndex);
+    tabla.deleteRow(fila.rowIndex);
+    this.focusActual = null;
+  }
+}
+
+export class CostosDirectos{
+
+  mesActual = null;
+  focusActual = null;
+  opcionActual = null;
+
+  crearCostosDirectos(){
+    let seccion = document.getElementById('Costos');
+    let vista = ``;
+    
+    vista += `
+    <h3>Costos Directos</h3>
+    <table class="table table-striped table-bordered table-dark text-center" id="tablaCostos">
+      <thead>
+        <tr>
+          <th scope="col" style="width: 4%;"></th>
+          <td scope="col">Sumatoria</td>    
+        </tr>
+      </thead>
+      <tbody id="contenido-tabla">        
+        <tr>
+          <th style="width: 10%;">Total</th>
+          <td id="sumaTotal" style="width: 20%;">[sumaTotal]</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="btn-group" role="group" aria-label="Basic radio toggle button group" style="margin-bottom: 15px;">
+      <input type="radio" class="btn-check" name="btnradio" id="botonCostosOpcion1" autocomplete="off">
+      <label class="btn btn-outline-success" for="botonCostosOpcion1">Opcion 1</label>
+    
+      <input type="radio" class="btn-check" name="btnradio" id="botonCostosOpcion2" autocomplete="off">
+      <label class="btn btn-outline-success" for="botonCostosOpcion2">Opcion 2</label>
+    
+      <input type="radio" class="btn-check" name="btnradio" id="botonCostosOpcion3" autocomplete="off">
+      <label class="btn btn-outline-success" for="botonCostosOpcion3">Opcion 3</label>
+    </div>
+
+    <button class="btn btn-success" type="button" role="button" id="botonAgregarCosto" style="margin-bottom: 15px;">Agregar Fila</button>
+    <button class="btn btn-danger" type="button" role="button"  id="botonEliminarCosto" style="margin-bottom: 15px;">Eliminar Fila</button>
+    `;
+    seccion.innerHTML = vista;
+    document.getElementById('botonCostosOpcion1').addEventListener('change', () =>{
+      this.opcionActual = 1;
+    });
+    document.getElementById('botonCostosOpcion2').addEventListener('change', () =>{
+      this.opcionActual = 2;
+    });
+    document.getElementById('botonCostosOpcion3').addEventListener('change', () =>{
+      this.opcionActual = 3;
+    });
+  }
+
+  agregarColumnaInicial(numeroMesInicial, opcion){
+    this.mesActual = numeroMesInicial;
+    let costosColumna = [];
+    let mes = listaMeses[this.mesActual];
+    let tabla = document.getElementById('tablaCostos');
+    let filas = tabla.querySelectorAll('tr');    
+    let numFilas = filas.length;
+    let celdas = filas[0].querySelectorAll('td').length;
+
+    filas.forEach((element, index) => {
+      let concepto = element.className;
+      let celda = element.insertCell(celdas);
+      celda.setAttribute('id',`celda${mes}${index}`);
+      if (index == 0) {
+        celda.textContent = mes;
+      }else if (index != numFilas-1){        
+        if (element.querySelector('th').className == `${concepto}Op1`) {
+          opcion = 1;       
+        }else if (element.querySelector('th').className == `${concepto}Op2`){
+          opcion = 2;
+        }else if (element.querySelector('th').className == `${concepto}Op3`) {
+          opcion = 3;
+        }        
+        let costo = { "idMes": celdas, "concepto": concepto, "opcion": opcion, "cantidad": 0, "opcionDos": null, "opcionTres": null };
+        if (opcion == 1) {
+          let imp = document.createElement('input');
+          imp.setAttribute('type','number');
+          imp.setAttribute('id',`input${concepto}${celdas}`);
+          imp.value = 0;
+          imp.addEventListener('change', realizarCalculos);
+          celda.appendChild(imp);
+        } else if (opcion == 2) {
+          costo.opcion = 2;
+          costo.cantidad = null;
+          costo.opcionDos = "tablaRecursos";          
+          costo.opcionTres = null;
+          celda.textContent = "opcion tipo 2";          
+        } else if (opcion == 3) {
+          costo.opcion = 3;
+          costo.cantidad = null;
+          costo.opcionDos = null;
+          costo.opcionTres = "tablaRecursos";
+          celda.textContent = "opcion tipo 3";
+        } else{
+          costo = null;
+          celda.textContent = "Sepa";
+        }
+        costosColumna.push(costo);
+      }else{
+        celda.textContent = `[total${mes}]`;
+      }
+    });
+    this.mesActual ++;
+    if (this.mesActual >= 12) { this.mesActual = 0; } 
+    return costosColumna;
+
+  }
+
+  agregarColumna(opcion){
+    let mes = listaMeses[this.mesActual];
+    let costosColumna = [];
+    let tabla = document.getElementById('tablaCostos');
+    let filas = tabla.querySelectorAll('tr');
+    let numFilas = filas.length;
+    let celdas = filas[0].querySelectorAll('td').length
+
+    filas.forEach((element, index) => {
+      let concepto = element.className;
+      let celda = element.insertCell(celdas);
+      celda.setAttribute('id',`celda${mes}${index}`);
+      if (index == 0) {
+        celda.textContent = mes;
+      }else if (index != numFilas-1){  
+        if (element.querySelector('th').className == `${concepto}Op1`) {
+          opcion = 1;       
+        }else if (element.querySelector('th').className == `${concepto}Op2`){
+          opcion = 2;
+        }else if (element.querySelector('th').className == `${concepto}Op3`) {
+          opcion = 3;
+        }
+        let costo = { "idMes": celdas, "concepto": concepto, "opcion": opcion, "cantidad": 0, "opcionDos": null, "opcionTres": null };
+        if (opcion == 1) {
+          let imp = document.createElement('input');
+          imp.setAttribute('type','number');
+          imp.setAttribute('id',`input${concepto}${celdas}`);
+          imp.value = 0;
+          imp.addEventListener('change', realizarCalculos);
+          celda.appendChild(imp);
+        } else if (opcion == 2) {
+          costo.opcion = 2;
+          costo.cantidad = null;
+          costo.opcionDos = "tablaRecursos";          
+          costo.opcionTres = null;
+          celda.textContent = "opcion tipo 2"
+          
+        } else if (opcion == 3) {
+          costo.opcion = 3;
+          costo.cantidad = null;
+          costo.opcionDos = null;
+          costo.opcionTres = "tablaRecursos";
+          celda.textContent = "opcion tipo 3"
+        } else{
+          costo = null;
+          celda.textContent = "Sepa"
+        }
+        costosColumna.push(costo);
+      }else{
+        celda.textContent = `[total${mes}]`;
+      }
+         
+    });
+    this.mesActual ++;
+    if (this.mesActual >= 12) { this.mesActual = 0; }
+    return costosColumna; 
+  }
+
+  eliminarColumna(){
+    let tabla = document.getElementById('tablaCostos');
+    let filas = tabla.querySelectorAll('tr');
+    let ultima = filas[0].querySelectorAll('td').length - 1;
+    if (ultima > 0) {
+      filas.forEach((element, index) => {
+        element.deleteCell(ultima);
+      });      
+    }
+    this.mesActual --;
+    if (this.mesActual < 0) { this.mesActual = 11; }
+  }
+
+  agregarFila(concepto, opcion, cantidad){
+    let costosFila = [];
+    let tabla = document.getElementById('tablaCostos');
+    let filas = tabla.querySelectorAll('tr');
+    let numFilas = filas.length;
+    let nuevaFila = tabla.insertRow(numFilas-1);    
+    nuevaFila.setAttribute('class',`${concepto}`);
+    let columnas = filas[0].querySelectorAll('td').length
+    for (let index = 0; index <= columnas; index++) {      
+      if (index == 0) {
+        let celda = document.createElement('th');
+        celda.setAttribute('class',`${concepto}Op${opcion}`);
+        let vista = '';
+        vista += `          
+          <input type="radio" class="btn-check" name="costos" id="${concepto}" autocomplete="off">
+          <label class="btn btn-outline-primary" for="${concepto}">${concepto}</label>    
+        `;        
+        celda.innerHTML = vista; 
+        nuevaFila.appendChild(celda);
+        let boton = document.getElementById(concepto);
+        boton.addEventListener('change', () =>{
+          this.focusActual = concepto;
+        });
+      }
+      else if(index != columnas){ 
+        let celda = nuevaFila.insertCell(index);
+        let costo = { "idMes": index, "concepto": concepto, "opcion": opcion, "cantidad": cantidad, "opcionDos": null, "opcionTres": null };  
+        if (opcion == 1) {         
+          let imp = document.createElement('input');
+          imp.setAttribute('type','number');
+          imp.setAttribute('id',`input${concepto}${index}`);
+          imp.value = cantidad;
+          imp.addEventListener('change', realizarCalculos);
+          celda.appendChild(imp);
+        } else if (opcion == 2) {
+          costo.opcion = 2;
+          costo.cantidad = null;
+          costo.opcionDos = "tablaRecursos";          
+          costo.opcionTres = null;
+          celda.textContent = "opcion tipo 2"; 
+        } else if (opcion == 3) {
+          costo.opcion = 3;
+          costo.cantidad = null;
+          costo.opcionDos = null;
+          costo.opcionTres = "tablaRecursos";
+          celda.textContent = "opcion tipo 3";
+        } else{
+          costo = null;
+          celda.textContent = "Sepa";
+        }
+        costosFila.push(costo);
+      }else{
+        let celda = nuevaFila.insertCell(index);
+        celda.textContent = `[suma${concepto}]`
+      }            
+    }
+    return costosFila;
+  }
+
+  eliminarFila(concepto){
+    let tabla = document.getElementById("tablaCostos");
+    let fila = document.querySelector(`tr.${concepto}`);
+    //console.log("indice: "+fila.rowIndex);
+    tabla.deleteRow(fila.rowIndex);
+    this.focusActual = null;
+  }
+}
+
+export class GastosAdministrativos{
+
+  mesActual = null;
+  focusActual = null;
+  opcionActual = null;
+
+  crearGastosAdministrativos(){
+    let seccion = document.getElementById('Gastos');
+    let vista = ``;
+    
+    vista += `
+    <h3>Gastos Administrativos</h3>
+    <table class="table table-striped table-bordered table-dark text-center" id="tablaGastos">
+      <thead>
+        <tr>
+          <th scope="col" style="width: 4%;"></th>
+          <td scope="col">Sumatoria</td>    
+        </tr>
+      </thead>
+      <tbody id="contenido-tabla">        
+        <tr>
+          <th style="width: 10%;">Total</th>
+          <td id="sumaTotal" style="width: 20%;">[sumaTotal]</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="btn-group" role="group" aria-label="Basic radio toggle button group" style="margin-bottom: 15px;">
+      <input type="radio" class="btn-check" name="btnradio1" id="botonGastosOpcion1" autocomplete="off">
+      <label class="btn btn-outline-success" for="botonGastosOpcion1">Opcion 1</label>
+    
+      <input type="radio" class="btn-check" name="btnradio1" id="botonGastosOpcion2" autocomplete="off">
+      <label class="btn btn-outline-success" for="botonGastosOpcion2">Opcion 2</label>
+    
+      <input type="radio" class="btn-check" name="btnradio1" id="botonGastosOpcion3" autocomplete="off">
+      <label class="btn btn-outline-success" for="botonGastosOpcion3">Opcion 3</label>
+    </div>
+
+    <button class="btn btn-success" type="button" role="button" id="botonAgregarGasto" style="margin-bottom: 15px;">Agregar Fila</button>
+    <button class="btn btn-danger" type="button" role="button"  id="botonEliminarGasto" style="margin-bottom: 15px;">Eliminar Fila</button> 
+    `;
+    seccion.innerHTML = vista;
+    document.getElementById('botonGastosOpcion1').addEventListener('change', () =>{
+      this.opcionActual = 1;
+    });
+    document.getElementById('botonGastosOpcion2').addEventListener('change', () =>{
+      this.opcionActual = 2;
+    });
+    document.getElementById('botonGastosOpcion3').addEventListener('change', () =>{
+      this.opcionActual = 3;
+    });
+  }
+
+  agregarColumnaInicial(numeroMesInicial, opcion){
+    this.mesActual = numeroMesInicial;
+    let gastosColumna = [];
+    let mes = listaMeses[this.mesActual];
+    let tabla = document.getElementById('tablaGastos');
+    let filas = tabla.querySelectorAll('tr');    
+    let numFilas = filas.length;
+    let celdas = filas[0].querySelectorAll('td').length;
+
+    filas.forEach((element, index) => {
+      let concepto = element.className;
+      let celda = element.insertCell(celdas);
+      celda.setAttribute('id',`celda${mes}${index}`);
+      if (index == 0) {
+        celda.textContent = mes;
+      }else if (index != numFilas-1){        
+        if (element.querySelector('th').className == `${concepto}Op1`) {
+          opcion = 1;       
+        }else if (element.querySelector('th').className == `${concepto}Op2`){
+          opcion = 2;
+        }else if (element.querySelector('th').className == `${concepto}Op3`) {
+          opcion = 3;
+        }        
+        let gasto = { "idMes": celdas, "concepto": concepto, "opcion": opcion, "cantidad": 0, "opcionDos": null, "opcionTres": null };
+        if (opcion == 1) {
+          let imp = document.createElement('input');
+          imp.setAttribute('type','number');
+          imp.setAttribute('id',`input${concepto}${celdas}`);
+          imp.value = 0;
+          imp.addEventListener('change', realizarCalculos);
+          celda.appendChild(imp);
+        } else if (opcion == 2) {
+          gasto.opcion = 2;
+          gasto.cantidad = null;
+          gasto.opcionDos = "tablaRecursos";          
+          gasto.opcionTres = null;
+          celda.textContent = "opcion tipo 2";          
+        } else if (opcion == 3) {
+          gasto.opcion = 3;
+          gasto.cantidad = null;
+          gasto.opcionDos = null;
+          gasto.opcionTres = "tablaRecursos";
+          celda.textContent = "opcion tipo 3";
+        } else{
+          gasto = null;
+          celda.textContent = "Sepa";
+        }
+        gastosColumna.push(gasto);
+      }else{
+        celda.textContent = `[total${mes}]`;
+      }
+    });
+    this.mesActual ++;
+    if (this.mesActual >= 12) { this.mesActual = 0; } 
+    return gastosColumna;
+
+  }
+
+  agregarColumna(opcion){
+    let mes = listaMeses[this.mesActual];
+    let gastosColumna = [];
+    let tabla = document.getElementById('tablaGastos');
+    let filas = tabla.querySelectorAll('tr');
+    let numFilas = filas.length;
+    let celdas = filas[0].querySelectorAll('td').length
+
+    filas.forEach((element, index) => {
+      let concepto = element.className;
+      let celda = element.insertCell(celdas);
+      celda.setAttribute('id',`celda${mes}${index}`);
+      if (index == 0) {
+        celda.textContent = mes;
+      }else if (index != numFilas-1){  
+        if (element.querySelector('th').className == `${concepto}Op1`) {
+          opcion = 1;       
+        }else if (element.querySelector('th').className == `${concepto}Op2`){
+          opcion = 2;
+        }else if (element.querySelector('th').className == `${concepto}Op3`) {
+          opcion = 3;
+        }
+        let gasto = { "idMes": celdas, "concepto": concepto, "opcion": opcion, "cantidad": 0, "opcionDos": null, "opcionTres": null };
+        if (opcion == 1) {
+          let imp = document.createElement('input');
+          imp.setAttribute('type','number');
+          imp.setAttribute('id',`input${concepto}${celdas}`);
+          imp.value = 0;
+          imp.addEventListener('change', realizarCalculos);
+          celda.appendChild(imp);
+        } else if (opcion == 2) {
+          gasto.opcion = 2;
+          gasto.cantidad = null;
+          gasto.opcionDos = "tablaRecursos";          
+          gasto.opcionTres = null;
+          celda.textContent = "opcion tipo 2"
+          
+        } else if (opcion == 3) {
+          gasto.opcion = 3;
+          gasto.cantidad = null;
+          gasto.opcionDos = null;
+          gasto.opcionTres = "tablaRecursos";
+          celda.textContent = "opcion tipo 3"
+        } else{
+          gasto = null;
+          celda.textContent = "Sepa"
+        }
+        gastosColumna.push(gasto);
+      }else{
+        celda.textContent = `[total${mes}]`;
+      }
+         
+    });
+    this.mesActual ++;
+    if (this.mesActual >= 12) { this.mesActual = 0; }
+    return gastosColumna; 
+  }
+
+  eliminarColumna(){
+    let tabla = document.getElementById('tablaGastos');
+    let filas = tabla.querySelectorAll('tr');
+    let ultima = filas[0].querySelectorAll('td').length - 1;
+    if (ultima > 0) {
+      filas.forEach((element, index) => {
+        element.deleteCell(ultima);
+      });      
+    }
+    this.mesActual --;
+    if (this.mesActual < 0) { this.mesActual = 11; }
+  }
+
+  agregarFila(concepto, opcion, cantidad){
+    let gastosFila = [];
+    let tabla = document.getElementById('tablaGastos');
+    let filas = tabla.querySelectorAll('tr');
+    let numFilas = filas.length;
+    let nuevaFila = tabla.insertRow(numFilas-1);    
+    nuevaFila.setAttribute('class',`${concepto}`);
+    let columnas = filas[0].querySelectorAll('td').length
+    for (let index = 0; index <= columnas; index++) {      
+      if (index == 0) {
+        let celda = document.createElement('th');
+        celda.setAttribute('class',`${concepto}Op${opcion}`);
+        let vista = '';
+        vista += `          
+          <input type="radio" class="btn-check" name="gastos" id="${concepto}" autocomplete="off">
+          <label class="btn btn-outline-primary" for="${concepto}">${concepto}</label>    
+        `;        
+        celda.innerHTML = vista; 
+        nuevaFila.appendChild(celda);
+        let boton = document.getElementById(concepto);
+        boton.addEventListener('change', () =>{
+          this.focusActual = concepto;
+        });
+      }
+      else if(index != columnas){ 
+        let celda = nuevaFila.insertCell(index);
+        let gasto = { "idMes": index, "concepto": concepto, "opcion": opcion, "cantidad": cantidad, "opcionDos": null, "opcionTres": null };  
+        if (opcion == 1) {         
+          let imp = document.createElement('input');
+          imp.setAttribute('type','number');
+          imp.setAttribute('id',`input${concepto}${index}`);
+          imp.value = cantidad;
+          imp.addEventListener('change', realizarCalculos);
+          celda.appendChild(imp);
+        } else if (opcion == 2) {
+          gasto.opcion = 2;
+          gasto.cantidad = null;
+          gasto.opcionDos = "tablaRecursos";          
+          gasto.opcionTres = null;
+          celda.textContent = "opcion tipo 2"; 
+        } else if (opcion == 3) {
+          gasto.opcion = 3;
+          gasto.cantidad = null;
+          gasto.opcionDos = null;
+          gasto.opcionTres = "tablaRecursos";
+          celda.textContent = "opcion tipo 3";
+        } else{
+          gasto = null;
+          celda.textContent = "Sepa";
+        }
+        gastosFila.push(gasto);
+      }else{
+        let celda = nuevaFila.insertCell(index);
+        celda.textContent = `[suma${concepto}]`
+      }            
+    }
+    return gastosFila;
+  }
+
+  eliminarFila(concepto){
+    let tabla = document.getElementById("tablaGastos");
+    let fila = document.querySelector(`tr.${concepto}`);
     tabla.deleteRow(fila.rowIndex);
     this.focusActual = null;
   }
