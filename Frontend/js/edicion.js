@@ -1,4 +1,4 @@
-import { ResumenFinanciero, FlujoDeEfectivo, EstadoDeResultados, Ingresos, CostosDirectos, GastosAdministrativos } from "../js/clases.js";
+import { ResumenFinanciero, FlujoDeEfectivo, EstadoDeResultados, Ingresos, CostosDirectos, GastosAdministrativos, Recursos } from "../js/clases.js";
 
 let resumen = new ResumenFinanciero();
 let flujo = new FlujoDeEfectivo();
@@ -6,12 +6,14 @@ let estado = new EstadoDeResultados();
 let ingresos = new Ingresos();
 let costos = new CostosDirectos();
 let gastos = new GastosAdministrativos();
+let recursos = new Recursos();
 
 let prespuesto = {"id": "1", "idUsuario": "1313", "Fecha": "20-08-05", "Proyecto": "ventas o algo", "version": "1.0.0"}
 let mesesContemplados = [];
 let conceptosIngresos = [];
 let conceptosCostos = [];
 let conceptosGastos = [];
+let rolesRecursos = [];
 
 resumen.crearResumenFinanciero();
 flujo.crearFlujoDeEfectivo();
@@ -19,8 +21,10 @@ estado.crearEstadoDeResultados();
 ingresos.crearIngresos();
 costos.crearCostosDirectos();
 gastos.crearGastosAdministrativos();
+recursos.crearRecursos();
 
 const guardarPresupuesto = document.getElementById('guardarPresupuesto');
+const eliminarPresupuesto = document.getElementById('eliminarPresupuesto');
 const agregarMes = document.getElementById('botonAgregarMes');
 const eliminarMes = document.getElementById('botonEliminarMes');
 const agregarIngreso = document.getElementById('botonAgregarIngreso');
@@ -29,6 +33,8 @@ const agregarCosto = document.getElementById('botonAgregarCosto');
 const eliminarCosto = document.getElementById('botonEliminarCosto');
 const agregarGasto = document.getElementById('botonAgregarGasto');
 const eliminarGasto = document.getElementById('botonEliminarGasto');
+const agregarRecurso = document.getElementById('botonAgregarRecurso');
+const eliminarRecurso = document.getElementById('botonEliminarRecurso');
 
 agregarMes.addEventListener('click', () => {
   if (mesesContemplados.length == 0) {
@@ -41,9 +47,9 @@ agregarMes.addEventListener('click', () => {
 
     estado.agregarColumnaInicial(inicial-1);
 
-    console.log("ingresosColuma");
+    //console.log("ingresosColuma");
     let respIngresos = ingresos.agregarColumnaInicial(inicial-1);
-    console.log(respIngresos);
+    //console.log(respIngresos);
     if (conceptosIngresos.length == 0) {
       conceptosIngresos.push(respIngresos);            
     } else{
@@ -52,9 +58,9 @@ agregarMes.addEventListener('click', () => {
       });  
     }
 
-    console.log("costosColuma");
+    //console.log("costosColuma");
     let respCostos = costos.agregarColumnaInicial(inicial-1, costos.opcionActual);
-    console.log(respCostos);
+    //console.log(respCostos);
     if (conceptosCostos.length == 0) {
       conceptosCostos.push(respCostos);            
     } else{
@@ -63,14 +69,25 @@ agregarMes.addEventListener('click', () => {
       });  
     }
 
-    console.log("gastosColuma");
+    //console.log("gastosColuma");
     let respGastos = gastos.agregarColumnaInicial(inicial-1, gastos.opcionActual);
-    console.log(respGastos);
+    //console.log(respGastos);
     if (conceptosGastos.length == 0) {
       conceptosGastos.push(respGastos);            
     } else{
       respGastos.forEach(element => {
         conceptosGastos[0].push(element);       
+      });  
+    }
+
+    //console.log("recursosColumna");
+    let respRecursos = recursos.agregarColumnaInicial(inicial-1);
+    //console.log(respRecursos);
+    if (rolesRecursos.length == 0) {
+      rolesRecursos.push(respRecursos);            
+    } else{
+      respRecursos.forEach(element => {
+        rolesRecursos[0].push(element);       
       });  
     }
 
@@ -96,6 +113,11 @@ agregarMes.addEventListener('click', () => {
     //console.log(respGastos);
     conceptosGastos.push(respGastos);
 
+    //console.log("ingresosColuma2");
+    let respRecursos = recursos.agregarColumna();
+    //console.log(respRecursos);
+    rolesRecursos.push(respRecursos);
+
   }
   
 });
@@ -106,10 +128,12 @@ eliminarMes.addEventListener('click', () => {
   ingresos.eliminarColumna();
   costos.eliminarColumna();
   gastos.eliminarColumna();
+  recursos.eliminarColumna();
   mesesContemplados.pop();
   conceptosIngresos.pop();
   conceptosCostos.pop();
   conceptosGastos.pop();
+  rolesRecursos.pop();
 });
 
 agregarIngreso.addEventListener('click', () => {
@@ -118,8 +142,8 @@ agregarIngreso.addEventListener('click', () => {
   }while(concepto == "");
   if (concepto != null) {
     let respuesta = ingresos.agregarFila(concepto, 0);
-    console.log(respuesta);
-    console.log("Pushh time");
+    //console.log(respuesta);
+    //console.log("Pushh time");
     respuesta.forEach((element, index) => {
       if (index >= conceptosIngresos.length) {
         let array = [];
@@ -154,8 +178,8 @@ agregarCosto.addEventListener('click', () => {
   if (concepto != null) {
     if (costos.opcionActual != null) {
       let respuesta = costos.agregarFila(concepto, costos.opcionActual, 0);
-      console.log(respuesta);
-      console.log("Pushh time costos");
+      //console.log(respuesta);
+      //console.log("Pushh time costos");
       respuesta.forEach((element, index) => {
         if (index >= conceptosCostos.length) {
           let array = [];
@@ -193,8 +217,8 @@ agregarGasto.addEventListener('click', () => {
   if (concepto != null) {
     if (gastos.opcionActual != null) {
       let respuesta = gastos.agregarFila(concepto, gastos.opcionActual, 0);
-      console.log(respuesta);
-      console.log("Pushh time gastos");
+      //console.log(respuesta);
+      //console.log("Pushh time gastos");
       respuesta.forEach((element, index) => {
         if (index >= conceptosGastos.length) {
           let array = [];
@@ -225,10 +249,61 @@ eliminarGasto.addEventListener('click', () => {
     alert("selecciona un concepto de gasto primero");  
 });
 
+
+agregarRecurso.addEventListener('click', () => {
+  do{
+    var rol = window.prompt("Por favor ingrese el rol del recurso", "");
+    var costo = parseInt(window.prompt("Por favor ingrese costo mensual del recurso", 1), 10);    
+  }while( (rol == "") || (isNaN(costo) || costo < 0) );
+  if (rol != null) {  
+    let respuesta = recursos.agregarFila(rol, costo);
+    //console.log(respuesta);
+    //console.log("Pushh time recursos");
+    respuesta.forEach((element, index) => {
+      if (index >= rolesRecursos.length) {
+        let array = [];
+        array.push(element);
+        rolesRecursos.push(array);        
+      }else{
+        rolesRecursos[index].push(element);
+      }  
+    });
+    
+  }  
+});
+
+
+eliminarRecurso.addEventListener('click', () => {  
+  if (recursos.focusActual != null) {
+    rolesRecursos.forEach(element => {
+      element.forEach((elemento, index) => {
+        if(elemento.rol == recursos.focusActual){
+          element.splice(index,1);
+        }
+      }); 
+    });
+    recursos.eliminarFila(recursos.focusActual);
+  }
+  else
+    alert("selecciona un rol de recurso primero");  
+});
+
 guardarPresupuesto.addEventListener('click', () => { 
 
   //console.log(mesesContemplados);
   //console.log(conceptosIngresos);
   //console.log(conceptosCostos);
-  console.log(conceptosGastos);
+  //console.log(conceptosGastos);
+  //console.log(rolesRecursos);
+});
+
+eliminarPresupuesto.addEventListener('click', () => { 
+
+  console.log("Realizando avaluo");
+  recursos.calcularValorRecursos();
+  recursos.calcularValorCostos();
+  recursos.calcularValorResumen();
+  
+
+  
 });
