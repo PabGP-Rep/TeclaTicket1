@@ -1,5 +1,9 @@
 import { ResumenFinanciero, FlujoDeEfectivo, EstadoDeResultados, Ingresos, CostosDirectos, GastosAdministrativos, Recursos } from "../js/clases.js";
 
+/*
+Instanciacion de los objetos definidos en clases.js
+pertenecientes a cada seccion del ticket
+*/
 let resumen = new ResumenFinanciero();
 let flujo = new FlujoDeEfectivo();
 let estado = new EstadoDeResultados();
@@ -8,13 +12,19 @@ let costos = new CostosDirectos();
 let gastos = new GastosAdministrativos();
 let recursos = new Recursos();
 
+//ejemplo de Json que se enviara al Back-End
 let prespuesto = {"id": "1", "idUsuario": "1313", "Fecha": "20-08-05", "Proyecto": "ventas o algo", "version": "1.0.0"}
+
+//Arreglo unidimencional de Json de los meses en el presupuesto
 let mesesContemplados = [];
+
+//Arreglos Bidimencionales de Json de los conceptos o roles pertenecientes a cada mes del presupuesto
 let conceptosIngresos = [];
 let conceptosCostos = [];
 let conceptosGastos = [];
 let rolesRecursos = [];
 
+//llamada a metodos de creacion encargados de crear el codigo html inicial de cada seccion
 resumen.crearResumenFinanciero();
 flujo.crearFlujoDeEfectivo();
 estado.crearEstadoDeResultados();
@@ -23,6 +33,7 @@ costos.crearCostosDirectos();
 gastos.crearGastosAdministrativos();
 recursos.crearRecursos();
 
+//Guardado de los botones para posteriormente agregarles el event listener
 const guardarPresupuesto = document.getElementById('guardarPresupuesto');
 const eliminarPresupuesto = document.getElementById('eliminarPresupuesto');
 const agregarMes = document.getElementById('botonAgregarMes');
@@ -36,99 +47,127 @@ const eliminarGasto = document.getElementById('botonEliminarGasto');
 const agregarRecurso = document.getElementById('botonAgregarRecurso');
 const eliminarRecurso = document.getElementById('botonEliminarRecurso');
 
+
+//Event listener encargado de agregar meses a las tablas de todas las secciones
 agregarMes.addEventListener('click', () => {
+  //Si el array de meses esta vacio se solicita uno inicial
   if (mesesContemplados.length == 0) {
     do{
       var inicial = parseInt(window.prompt("Por favor ingrese el numero del mes inicial(1 a 12)", 1), 10);
     }while(isNaN(inicial) || inicial > 12 || inicial < 1);
-    
+
+
+    //modificacion del DOM de la seccion flujo de efectivo
     let respuesta = flujo.agregarColumnaInicial(prespuesto.id, inicial-1, 500);
+    //guardado del archivo Json del mes generado
     mesesContemplados.push(respuesta);
 
+    //modificacion del DOM de la seccion Estado de Resultados
     estado.agregarColumnaInicial(inicial-1);
 
-    //console.log("ingresosColuma");
+    //modificacion del DOM de la seccion Ingresos
     let respIngresos = ingresos.agregarColumnaInicial(inicial-1);
-    //console.log(respIngresos);
+    
+    //guardado de los archivos Json de los conceptos de Ingresos generados    
     if (conceptosIngresos.length == 0) {
+      //Si el array esta vacio se hace push con el arreglo completo que regresa la funcion
       conceptosIngresos.push(respIngresos);            
     } else{
+      //Si hay un arreglo dentro del arreglo se hace push al arreglo existente con cada elemento
+      //del arreglo que regresa la funcion
       respIngresos.forEach(element => {
         conceptosIngresos[0].push(element);       
       });  
     }
 
-    //console.log("costosColuma");
+    //modificacion del DOM de la seccion Costos Directos
     let respCostos = costos.agregarColumnaInicial(inicial-1, costos.opcionActual);
-    //console.log(respCostos);
+
+    //guardado de los archivos Json de los conceptos de Costos generados   
     if (conceptosCostos.length == 0) {
+      //Si el array esta vacio se hace push con el arreglo completo que regresa la funcion
       conceptosCostos.push(respCostos);            
     } else{
+      //Si hay un arreglo dentro del arreglo se hace push al arreglo existente con cada elemento
+      //del arreglo que regresa la funcion
       respCostos.forEach(element => {
         conceptosCostos[0].push(element);       
       });  
     }
 
-    //console.log("gastosColuma");
+    //modificacion del DOM de la seccion Gastos Administrativos
     let respGastos = gastos.agregarColumnaInicial(inicial-1, gastos.opcionActual);
-    //console.log(respGastos);
+
+    //guardado de los archivos Json de los conceptos de Gastos generados
     if (conceptosGastos.length == 0) {
+      //Si el array esta vacio se hace push con el arreglo completo que regresa la funcion
       conceptosGastos.push(respGastos);            
     } else{
+      //Si hay un arreglo dentro del arreglo se hace push al arreglo existente con cada elemento
+      //del arreglo que regresa la funcion
       respGastos.forEach(element => {
         conceptosGastos[0].push(element);       
       });  
     }
 
-    //console.log("recursosColumna");
+    //modificacion del DOM de la seccion Asignacion de Recursos
     let respRecursos = recursos.agregarColumnaInicial(inicial-1);
-    //console.log(respRecursos);
+
+    //guardado de los archivos Json de los conceptos de Recursos generados
     if (rolesRecursos.length == 0) {
+      //Si no hay arreglos dentro del arreglo se hace push con el arreglo completo que regresa la funcion
       rolesRecursos.push(respRecursos);            
     } else{
+      //Si hay un arreglo dentro del arreglo se hace push al arreglo existente con cada elemento
+      //del arreglo que regresa la funcion
       respRecursos.forEach(element => {
         rolesRecursos[0].push(element);       
       });  
-    }
+    }    
+  } 
+   //Si el array de meses no esta vacio se agregan los meses posteriores al inicial 
+  else{
 
-    
-  } else{
+    //Sucede lo mismo que cuando se agrega la primera columna, solo que
+    //esta vez esta asegurado que los arreglos de Json para la columna
+    //que se acaba de crear no existe y se puede hacer push con el arreglo
+    //completo en cada ocación
+
     let respuesta = flujo.agregarColumna(prespuesto.id, 800);
     mesesContemplados.push(respuesta);
 
     estado.agregarColumna();
-
-    //console.log("ingresosColuma2");
-    let respIngresos = ingresos.agregarColumna();
-    //console.log(respIngresos);
+    
+    let respIngresos = ingresos.agregarColumna();    
     conceptosIngresos.push(respIngresos);
 
-    //console.log("costosColuma2");
-    let respCostos = costos.agregarColumna(costos.opcionActual);
-    //console.log(respCostos);
+    
+    let respCostos = costos.agregarColumna(costos.opcionActual); 
     conceptosCostos.push(respCostos);
 
-    //console.log("gastosColuma2");
+    
     let respGastos = gastos.agregarColumna(gastos.opcionActual);
-    //console.log(respGastos);
     conceptosGastos.push(respGastos);
 
-    //console.log("ingresosColuma2");
+   
     let respRecursos = recursos.agregarColumna();
-    //console.log(respRecursos);
     rolesRecursos.push(respRecursos);
 
   }
   
 });
 
+//Eliminacin de columnas
 eliminarMes.addEventListener('click', () => {
+  //Eliminacion de columna en cad parte del DOM
   flujo.eliminarColumna();
   estado.eliminarColumna();
   ingresos.eliminarColumna();
   costos.eliminarColumna();
   gastos.eliminarColumna();
   recursos.eliminarColumna();
+
+  //Eliminacion de columna en cada array correspondiente
   mesesContemplados.pop();
   conceptosIngresos.pop();
   conceptosCostos.pop();
@@ -136,19 +175,27 @@ eliminarMes.addEventListener('click', () => {
   rolesRecursos.pop();
 });
 
+
+//creacion de una fila correspondiente a un ingreso
 agregarIngreso.addEventListener('click', () => {
+  //Solicitud del nombre del concepto
   do{
     var concepto = window.prompt("Por favor ingrese el concepto del ingreso", "");
   }while(concepto == "");
+
   if (concepto != null) {
+    //Creacion de fila en DOM
     let respuesta = ingresos.agregarFila(concepto, 0);
-    //console.log(respuesta);
-    //console.log("Pushh time");
+
+    //agregacion de los Json al arreglo bidimencional
     respuesta.forEach((element, index) => {
+      //Si no existe un arreglo en el indice de elemento se crea un arreglo y se hace push
+      //con el elemento dentro
       if (index >= conceptosIngresos.length) {
         let array = [];
         array.push(element);
-        conceptosIngresos.push(array);        
+        conceptosIngresos.push(array);
+        //Si ya hay un arreglo en ese numero de indice se hace push con solo el elemento     
       }else{
         conceptosIngresos[index].push(element);
       }  
@@ -156,8 +203,11 @@ agregarIngreso.addEventListener('click', () => {
   }  
 });
 
+//eliminacion de una fila correspondiente a un ingreso
 eliminarIngreso.addEventListener('click', () => {  
+  //Si ya se selecciono un ingreso en la tabla se elimina dicha seleccion
   if (ingresos.focusActual != null) {  
+    //Eliminacion del elemento Json correspondiente en cada arreglo de Jsons
     conceptosIngresos.forEach(element => {
       element.forEach((elemento, index) => {
         if(elemento.concepto == ingresos.focusActual){
@@ -165,21 +215,22 @@ eliminarIngreso.addEventListener('click', () => {
         }        
       }); 
     });
+    //Eliminacion de la fila seleccionada en el DOM
     ingresos.eliminarFila(ingresos.focusActual);
   }
+  //si no, se solicita seleccionar un ingreso de la tabla
   else
     alert("selecciona un concepto de ingreso primero");  
 });
 
+//creacion de una fila correspondiente a un costo
 agregarCosto.addEventListener('click', () => {
   do{
     var concepto = window.prompt("Por favor ingrese el concepto del costo", "");
   }while(concepto == "");
   if (concepto != null) {
     if (costos.opcionActual != null) {
-      let respuesta = costos.agregarFila(concepto, costos.opcionActual, 0);
-      //console.log(respuesta);
-      //console.log("Pushh time costos");
+      let respuesta = costos.agregarFila(concepto, costos.opcionActual, 0);      
       respuesta.forEach((element, index) => {
         if (index >= conceptosCostos.length) {
           let array = [];
@@ -195,6 +246,7 @@ agregarCosto.addEventListener('click', () => {
   }  
 });
 
+//eliminacion de una fila correspondiente a un costo
 eliminarCosto.addEventListener('click', () => {  
   if (costos.focusActual != null) {  
     conceptosCostos.forEach(element => {
@@ -210,15 +262,24 @@ eliminarCosto.addEventListener('click', () => {
     alert("selecciona un concepto de costo primero");  
 });
 
+//creacion de una fila correspondiente a un gasto
 agregarGasto.addEventListener('click', () => {
   do{
     var concepto = window.prompt("Por favor ingrese el concepto del gasto", "");
   }while(concepto == "");
-  if (concepto != null) {
+
+  if (gastos.opcionActual == 3) {
+    do{
+      var porcentaje = window.prompt("Por favor ingrese el porcentaje", "");
+    }while(isNaN(porcentaje) || porcentaje < 1 || porcentaje > 100);    
+  }else{ 
+    var porcentaje = 0;
+  }
+
+  if (concepto != null && porcentaje != null) {
     if (gastos.opcionActual != null) {
-      let respuesta = gastos.agregarFila(concepto, gastos.opcionActual, 0);
-      //console.log(respuesta);
-      //console.log("Pushh time gastos");
+      let respuesta = gastos.agregarFila(concepto, gastos.opcionActual, 0, porcentaje);
+      
       respuesta.forEach((element, index) => {
         if (index >= conceptosGastos.length) {
           let array = [];
@@ -234,6 +295,7 @@ agregarGasto.addEventListener('click', () => {
   }  
 });
 
+//eliminacion de una fila correspondiente a un gasto
 eliminarGasto.addEventListener('click', () => {  
   if (gastos.focusActual != null) {  
     conceptosGastos.forEach(element => {
@@ -249,7 +311,7 @@ eliminarGasto.addEventListener('click', () => {
     alert("selecciona un concepto de gasto primero");  
 });
 
-
+//creacion de una fila correspondiente a un recurso
 agregarRecurso.addEventListener('click', () => {
   do{
     var rol = window.prompt("Por favor ingrese el rol del recurso", "");
@@ -257,8 +319,7 @@ agregarRecurso.addEventListener('click', () => {
   }while( (rol == "") || (isNaN(costo) || costo < 0) );
   if (rol != null) {  
     let respuesta = recursos.agregarFila(rol, costo);
-    //console.log(respuesta);
-    //console.log("Pushh time recursos");
+   
     respuesta.forEach((element, index) => {
       if (index >= rolesRecursos.length) {
         let array = [];
@@ -272,7 +333,7 @@ agregarRecurso.addEventListener('click', () => {
   }  
 });
 
-
+//eliminacion de una fila correspondiente a un recurso
 eliminarRecurso.addEventListener('click', () => {  
   if (recursos.focusActual != null) {
     rolesRecursos.forEach(element => {
@@ -288,8 +349,8 @@ eliminarRecurso.addEventListener('click', () => {
     alert("selecciona un rol de recurso primero");  
 });
 
-guardarPresupuesto.addEventListener('click', () => { 
 
+guardarPresupuesto.addEventListener('click', () => {
   //console.log(mesesContemplados);
   //console.log(conceptosIngresos);
   //console.log(conceptosCostos);
@@ -297,13 +358,18 @@ guardarPresupuesto.addEventListener('click', () => {
   //console.log(rolesRecursos);
 });
 
+
+//Funcionalidad de calculo de valores en cada tabla (TEMPORAL)
 eliminarPresupuesto.addEventListener('click', () => { 
 
-  console.log("Realizando avaluo");
+  //console.log("Realizando operaciones");
   recursos.calcularValorRecursos();
   recursos.calcularValorCostos();
   recursos.calcularValorResumen();
-  
 
+  gastos.calcularValor();
+  costos.calcularValor();
+  ingresos.calcularValor();
+  estado.calcularValor();
   
 });

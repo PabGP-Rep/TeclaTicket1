@@ -1,20 +1,21 @@
+//Lista de meses utilizados para la creacion de titulos en cada tabla
 const listaMeses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
-
+//Funcion que indica el nuevo valor de un campo editable
+//asignada al event listener OnChange de los campos editables
 function realizarCalculos(a){
   console.log(a.target.id+" cambio a "+a.target.value);
 }
 
+//Funcion para revisar que el valor ingresado en un editable este entre  1 y 100
 function revisarValor(a){
   if (a.target.value < 1 || a.target.value > 100 || a.target.value == null){
     alert("El valor ingresado debe estar entre 1 y 100");
     a.target.value = 1;
-    //console.log(a.target.id+" cambio a "+a.target.value);    
-  }
-  
+  }  
 }
 
-
+//Clase encargada de crear el DOM de la seccion y operaciones de la seccion Resumen Financiero
 export class ResumenFinanciero{
 
   crearResumenFinanciero(){
@@ -50,6 +51,8 @@ export class ResumenFinanciero{
 
 }
 
+//Clase encargada de crear el DOM de la seccion y operaciones, asi como creacion y envio 
+//de los arreglos json de la seccion Flujo de efectivo
 export class FlujoDeEfectivo{
 
    mesActual = null;
@@ -59,14 +62,14 @@ export class FlujoDeEfectivo{
     let vista = ``;
     vista += `
     <h3>Flujo de Efectivo</h3>
-    <table class="table table-striped table-bordered table-dark text-center" id="tablaFlujoDeEfectivo">
+    <table class="table table-striped table-bordered border-white table-dark text-center" id="tablaFlujoDeEfectivo">
       <thead>
         <tr>
           <th scope="col" style="width: 4%;"></th>        
           <td scope="col">Sumatoria</td>    
         </tr>
       </thead>
-      <tbody id="contenido-tabla">
+      <tbody class="contenido-tabla">
         <tr>
           <th style="width: 10%;">Ingresos</th>
           <td id="sumaIngresos" style="width: 20%;">[sumaIngresos]</td>        
@@ -164,6 +167,7 @@ export class FlujoDeEfectivo{
 
 }
 
+//Clase encargada de crear el DOM de la seccion y operaciones de la seccion Estado de Resultados
 export class EstadoDeResultados{
   mesActual = null;
 
@@ -172,14 +176,14 @@ export class EstadoDeResultados{
     let vista = ``;
     vista += `
     <h3>Estado de Resultados</h3>
-    <table class="table table-striped table-bordered table-success text-center" id="tablaEstadoDeResultados">
+    <table class="table table-striped table-bordered border-primary table-success text-center" id="tablaEstadoDeResultados">
       <thead>
         <tr>
           <th scope="col" style="width: 4%;"></th>
           <td scope="col">Sumatoria</th>    
         </tr>
       </thead>
-      <tbody id="contenido-tabla">
+      <tbody class="contenido-tabla">
         <tr>
           <th style="width: 10%;">Ventas</th>
           <td id="sumaVentas" style="width: 20%;">[sumaVentas]</td>
@@ -252,8 +256,93 @@ export class EstadoDeResultados{
     if (this.mesActual < 0) { this.mesActual = 11; }
   }
 
+  calcularValor(){
+    let filasResultado = document.getElementById("tablaEstadoDeResultados").querySelectorAll('.contenido-tabla tr');
+    let filaVentasR = filasResultado[0];
+    let filaCostosR = filasResultado[1];
+    let filaMargenR = filasResultado[2];
+    let filaSaldoFinal = filasResultado[3];
+    
+    let numCeldas = filasResultado[0].querySelectorAll('td').length;
+    let filaFinal = [];
+
+    for (let index = 0; index < numCeldas-1; index++) {
+      filaFinal[index] = 0; 
+    }    
+    console.log(filaFinal);
+    //console.log("filas"+numFilas);
+    console.log("celdas:"+numCeldas);
+
+    if (numCeldas > 1) {
+      filasCosto.forEach((element, index) => {
+
+        if (index < (numFilas-1)) {  
+          let celdasCosto = filasCosto[index].querySelectorAll('td');
+          let opcion = filasCosto[index].querySelector('th').className;
+          //console.log("opcion:"+opcion);
+          let acumulador = 0;          
+
+          celdasCosto.forEach((elemento, indice) => {
+
+            if (opcion == 'op1') {
+              if (indice < (numCeldas-1)) {
+                let costo = parseInt(celdasCosto[indice].querySelector('input').value);
+                acumulador += costo;
+                //console.log("Acumu: "+acumulador);
+                filaFinal[indice] += costo;
+              }else{
+                celdasCosto[indice].textContent = acumulador;
+                filaFinal[indice] += acumulador;
+              }              
+            }else{
+              if (indice < (numCeldas-1)) {
+                let filasCostoR = document.getElementById("tablaRecursosCostos").querySelectorAll('.contenido-tabla tr');
+                let numFilasCostoR = filasCostoR.length;
+                let celdasCostoR = filasCostoR[numFilasCostoR-1].querySelectorAll('td');
+                //let numCeldasCosto = celdasCosto.length;                
+
+                let costo = parseInt(celdasCostoR[indice].textContent,10);
+                if (opcion == 'op3') {
+                  costo = costo*(0.5);
+                  
+                }
+                //console.log("Gasto["+indice+"]: "+gasto);
+                
+                celdasCosto[indice].textContent = costo;
+                acumulador += costo;
+                filaFinal[indice] += costo;
+              }else{
+                celdasCosto[indice].textContent = acumulador;
+                filaFinal[indice] += acumulador;
+              }
+            }            
+          });          
+        } else{
+          let celdasCosto = filasCosto[index].querySelectorAll('td');
+
+          celdasCosto.forEach((elemento, indice) => {
+            celdasCosto[indice].textContent = filaFinal[indice];            
+          });
+        }        
+      });      
+    }
+    else{
+      filaVentasR.querySelector('td').textContent = 0;
+      filaCostosR.querySelector('td').textContent = 0;
+      filaMargenR.querySelector('td').textContent = 0;
+      filaSaldoFinal.querySelector('td').textContent = 0;
+      
+     
+
+      //alert("No hay suficientes datos")
+    }
+
+  }
+
 }
 
+//Clase encargada de crear el DOM de la seccion, operaciones, asi como creacion y envio 
+//de los arreglos json de la seccion Ingresos
 export class Ingresos{
   mesActual = null;
   focusActual = null;
@@ -263,14 +352,14 @@ export class Ingresos{
     let vista = ``;
     vista += `
     <h3>Ingresos</h3>
-    <table class="table table-striped table-bordered table-dark text-center" id="tablaIngresos">
+    <table class="table table-striped table-bordered border-success table-dark text-center" id="tablaIngresos">
       <thead>
         <tr>
           <th scope="col" style="width: 4%;"></th>
           <td scope="col">Sumatoria</td>    
         </tr>
       </thead>
-      <tbody id="contenido-tabla">
+      <tbody class="contenido-tabla">
         <tr>
           <th style="width: 10%;">Total</th>
           <td id="sumaTotal" style="width: 20%;">[sumaTotal]</td>
@@ -413,13 +502,69 @@ export class Ingresos{
     tabla.deleteRow(fila.rowIndex);
     this.focusActual = null;
   }
+
+  calcularValor(){
+    let filasIngreso = document.getElementById("tablaIngresos").querySelectorAll('.contenido-tabla tr');
+    let numFilas = filasIngreso.length;
+    let numCeldas = filasIngreso[0].querySelectorAll('td').length;
+    let filaFinal = [];
+
+    for (let index = 0; index < numCeldas; index++) {
+      filaFinal[index] = 0; 
+    }    
+    //console.log(filaFinal);
+    //console.log("filas"+numFilas);
+    //console.log("celdas:"+numCeldas);
+
+    if (numFilas > 1) {
+      filasIngreso.forEach((element, index) => {
+
+        if (index < (numFilas-1)) {  
+          let celdasIngreso = filasIngreso[index].querySelectorAll('td');
+          let acumulador = 0;          
+
+          celdasIngreso.forEach((elemento, indice) => {
+
+            if (indice < (numCeldas-1)) {
+              let ingreso = parseInt(celdasIngreso[indice].querySelector('input').value);
+              acumulador += ingreso;
+              //console.log("Acumu: "+acumulador);
+              filaFinal[indice] += ingreso;
+            }else{
+              celdasIngreso[indice].textContent = acumulador;
+              filaFinal[indice] += acumulador;
+            }
+                     
+          });          
+        } else{
+          let celdasIngreso = filasIngreso[index].querySelectorAll('td');
+
+          celdasIngreso.forEach((elemento, indice) => {
+            celdasIngreso[indice].textContent = filaFinal[indice];            
+          });
+        }        
+      });      
+    }
+    else{
+      let celdasIngreso = filasIngreso[0].querySelectorAll('td');
+      celdasIngreso.forEach((elemento, indice) => {
+        celdasIngreso[indice].textContent = 0;
+      });
+      //alert("No hay suficientes datos")
+    }
+    
+  }
+  
 }
 
+//Clase encargada de crear el DOM de la seccion, operaciones, asi como creacion y envio 
+//de los arreglos json de la seccion Costos Directos
 export class CostosDirectos{
 
   mesActual = null;
   focusActual = null;
   opcionActual = null;
+  porcentaje = null;
 
   crearCostosDirectos(){
     let seccion = document.getElementById('Costos');
@@ -427,14 +572,14 @@ export class CostosDirectos{
     
     vista += `
     <h3>Costos Directos</h3>
-    <table class="table table-striped table-bordered table-dark text-center" id="tablaCostos">
+    <table class="table table-striped table-bordered border-danger table-dark text-center" id="tablaCostos">
       <thead>
         <tr>
           <th scope="col" style="width: 4%;"></th>
           <td scope="col">Sumatoria</td>    
         </tr>
       </thead>
-      <tbody id="contenido-tabla">        
+      <tbody class="contenido-tabla">        
         <tr>
           <th style="width: 10%;">Total</th>
           <td id="sumaTotal" style="width: 20%;">[sumaTotal]</td>
@@ -484,11 +629,11 @@ export class CostosDirectos{
       if (index == 0) {
         celda.textContent = mes;
       }else if (index != numFilas-1){        
-        if (element.querySelector('th').className == `${concepto}Op1`) {
+        if (element.querySelector('th').className == `op1`) {
           opcion = 1;       
-        }else if (element.querySelector('th').className == `${concepto}Op2`){
+        }else if (element.querySelector('th').className == `op2`){
           opcion = 2;
-        }else if (element.querySelector('th').className == `${concepto}Op3`) {
+        }else if (element.querySelector('th').className == `op3`) {
           opcion = 3;
         }        
         let costo = { "idMes": celdas, "concepto": concepto, "opcion": opcion, "cantidad": 0, "opcionDos": null, "opcionTres": null };
@@ -541,11 +686,11 @@ export class CostosDirectos{
       if (index == 0) {
         celda.textContent = mes;
       }else if (index != numFilas-1){  
-        if (element.querySelector('th').className == `${concepto}Op1`) {
+        if (element.querySelector('th').className == `op1`) {
           opcion = 1;       
-        }else if (element.querySelector('th').className == `${concepto}Op2`){
+        }else if (element.querySelector('th').className == `op2`){
           opcion = 2;
-        }else if (element.querySelector('th').className == `${concepto}Op3`) {
+        }else if (element.querySelector('th').className == `op3`) {
           opcion = 3;
         }
         let costo = { "idMes": celdas, "concepto": concepto, "opcion": opcion, "cantidad": 0, "opcionDos": null, "opcionTres": null };
@@ -608,7 +753,7 @@ export class CostosDirectos{
     for (let index = 0; index <= columnas; index++) {      
       if (index == 0) {
         let celda = document.createElement('th');
-        celda.setAttribute('class',`${concepto}Op${opcion}`);
+        celda.setAttribute('class',`op${opcion}`);
         let vista = '';
         vista += `          
           <input type="radio" class="btn-check" name="costos" id="${concepto}" autocomplete="off">
@@ -663,13 +808,93 @@ export class CostosDirectos{
     tabla.deleteRow(fila.rowIndex);
     this.focusActual = null;
   }
+
+  calcularValor(){
+    let filasCosto = document.getElementById("tablaCostos").querySelectorAll('.contenido-tabla tr');
+    let numFilas = filasCosto.length;
+    let numCeldas = filasCosto[0].querySelectorAll('td').length;
+    let filaFinal = [];
+
+    for (let index = 0; index < numCeldas; index++) {
+      filaFinal[index] = 0; 
+    }    
+    //console.log(filaFinal);
+    //console.log("filas"+numFilas);
+    //console.log("celdas:"+numCeldas);
+
+    if (numFilas > 1) {
+      filasCosto.forEach((element, index) => {
+
+        if (index < (numFilas-1)) {  
+          let celdasCosto = filasCosto[index].querySelectorAll('td');
+          let opcion = filasCosto[index].querySelector('th').className;
+          //console.log("opcion:"+opcion);
+          let acumulador = 0;          
+
+          celdasCosto.forEach((elemento, indice) => {
+
+            if (opcion == 'op1') {
+              if (indice < (numCeldas-1)) {
+                let costo = parseInt(celdasCosto[indice].querySelector('input').value);
+                acumulador += costo;
+                //console.log("Acumu: "+acumulador);
+                filaFinal[indice] += costo;
+              }else{
+                celdasCosto[indice].textContent = acumulador;
+                filaFinal[indice] += acumulador;
+              }              
+            }else{
+              if (indice < (numCeldas-1)) {
+                let filasCostoR = document.getElementById("tablaRecursosCostos").querySelectorAll('.contenido-tabla tr');
+                let numFilasCostoR = filasCostoR.length;
+                let celdasCostoR = filasCostoR[numFilasCostoR-1].querySelectorAll('td');
+                //let numCeldasCosto = celdasCosto.length;                
+
+                let costo = parseInt(celdasCostoR[indice].textContent,10);
+                if (opcion == 'op3') {
+                  costo = costo*(0.5);
+                  
+                }
+                //console.log("Gasto["+indice+"]: "+gasto);
+                
+                celdasCosto[indice].textContent = costo;
+                acumulador += costo;
+                filaFinal[indice] += costo;
+              }else{
+                celdasCosto[indice].textContent = acumulador;
+                filaFinal[indice] += acumulador;
+              }
+            }            
+          });          
+        } else{
+          let celdasCosto = filasCosto[index].querySelectorAll('td');
+
+          celdasCosto.forEach((elemento, indice) => {
+            celdasCosto[indice].textContent = filaFinal[indice];            
+          });
+        }        
+      });      
+    }
+    else{
+      let celdasCosto = filasCosto[0].querySelectorAll('td');
+      celdasCosto.forEach((elemento, indice) => {
+        celdasCosto[indice].textContent = 0;        
+      });
+      //alert("No hay suficientes datos")
+    }
+    
+  }
+
 }
 
+//Clase encargada de crear el DOM de la seccion, operaciones, asi como creacion y envio 
+//de los arreglos json de la seccion Gastos Administrativos
 export class GastosAdministrativos{
 
   mesActual = null;
   focusActual = null;
   opcionActual = null;
+  porcentaje = null;
 
   crearGastosAdministrativos(){
     let seccion = document.getElementById('Gastos');
@@ -677,14 +902,14 @@ export class GastosAdministrativos{
     
     vista += `
     <h3>Gastos Administrativos</h3>
-    <table class="table table-striped table-bordered table-dark text-center" id="tablaGastos">
+    <table class="table table-striped table-bordered border-warning table-dark text-center" id="tablaGastos">
       <thead>
         <tr>
           <th scope="col" style="width: 4%;"></th>
           <td scope="col">Sumatoria</td>    
         </tr>
       </thead>
-      <tbody id="contenido-tabla">        
+      <tbody class="contenido-tabla">        
         <tr>
           <th style="width: 10%;">Total</th>
           <td id="sumaTotal" style="width: 20%;">[sumaTotal]</td>
@@ -734,11 +959,11 @@ export class GastosAdministrativos{
       if (index == 0) {
         celda.textContent = mes;
       }else if (index != numFilas-1){        
-        if (element.querySelector('th').className == `${concepto}Op1`) {
+        if (element.querySelector('th').className == `op1`) {
           opcion = 1;       
-        }else if (element.querySelector('th').className == `${concepto}Op2`){
+        }else if (element.querySelector('th').className == `$op2`){
           opcion = 2;
-        }else if (element.querySelector('th').className == `${concepto}Op3`) {
+        }else if (element.querySelector('th').className == `op3`) {
           opcion = 3;
         }        
         let gasto = { "idMes": celdas, "concepto": concepto, "opcion": opcion, "cantidad": 0, "opcionDos": null, "opcionTres": null };
@@ -791,11 +1016,11 @@ export class GastosAdministrativos{
       if (index == 0) {
         celda.textContent = mes;
       }else if (index != numFilas-1){  
-        if (element.querySelector('th').className == `${concepto}Op1`) {
+        if (element.querySelector('th').className == `op1`) {
           opcion = 1;       
-        }else if (element.querySelector('th').className == `${concepto}Op2`){
+        }else if (element.querySelector('th').className == `op2`){
           opcion = 2;
-        }else if (element.querySelector('th').className == `${concepto}Op3`) {
+        }else if (element.querySelector('th').className == `op3`) {
           opcion = 3;
         }
         let gasto = { "idMes": celdas, "concepto": concepto, "opcion": opcion, "cantidad": 0, "opcionDos": null, "opcionTres": null };
@@ -847,7 +1072,7 @@ export class GastosAdministrativos{
     if (this.mesActual < 0) { this.mesActual = 11; }
   }
 
-  agregarFila(concepto, opcion, cantidad){
+  agregarFila(concepto, opcion, cantidad, porcentaje){
     let gastosFila = [];
     let tabla = document.getElementById('tablaGastos');
     let filas = tabla.querySelectorAll('tr');
@@ -858,7 +1083,7 @@ export class GastosAdministrativos{
     for (let index = 0; index <= columnas; index++) {      
       if (index == 0) {
         let celda = document.createElement('th');
-        celda.setAttribute('class',`${concepto}Op${opcion}`);
+        celda.setAttribute('class',`op${opcion}`);
         let vista = '';
         vista += `          
           <input type="radio" class="btn-check" name="gastos" id="${concepto}" autocomplete="off">
@@ -884,14 +1109,14 @@ export class GastosAdministrativos{
         } else if (opcion == 2) {
           gasto.opcion = 2;
           gasto.cantidad = null;
-          gasto.opcionDos = "tablaRecursos";          
+          gasto.opcionDos = "tablaRecursosCostos";          
           gasto.opcionTres = null;
           celda.textContent = "opcion tipo 2"; 
         } else if (opcion == 3) {
           gasto.opcion = 3;
           gasto.cantidad = null;
           gasto.opcionDos = null;
-          gasto.opcionTres = "tablaRecursos";
+          gasto.opcionTres = "tablaRecursosCostos_50";
           celda.textContent = "opcion tipo 3";
         } else{
           gasto = null;
@@ -912,8 +1137,87 @@ export class GastosAdministrativos{
     tabla.deleteRow(fila.rowIndex);
     this.focusActual = null;
   }
+
+  calcularValor(){
+    let filasGasto = document.getElementById("tablaGastos").querySelectorAll('.contenido-tabla tr');
+    let numFilas = filasGasto.length;
+    let numCeldas = filasGasto[0].querySelectorAll('td').length;
+    let filaFinal = [];
+
+    for (let index = 0; index < numCeldas; index++) {
+      filaFinal[index] = 0; 
+    }    
+    //console.log(filaFinal);
+    //console.log("filas"+numFilas);
+    //console.log("celdas:"+numCeldas);
+
+    if (numFilas > 1) {
+      filasGasto.forEach((element, index) => {
+
+        if (index < (numFilas-1)) {  
+          let celdasGasto = filasGasto[index].querySelectorAll('td');
+          let opcion = filasGasto[index].querySelector('th').className;
+          //console.log("opcion:"+opcion);
+          let acumulador = 0;          
+
+          celdasGasto.forEach((elemento, indice) => {
+
+            if (opcion == 'op1') {
+              if (indice < (numCeldas-1)) {
+                let gasto = parseInt(celdasGasto[indice].querySelector('input').value);
+                acumulador += gasto;
+                //console.log("Acumu: "+acumulador);
+                filaFinal[indice] += gasto;
+              }else{
+                celdasGasto[indice].textContent = acumulador;
+                filaFinal[indice] += acumulador;
+              }              
+            }else{
+              if (indice < (numCeldas-1)) {
+                let filasCosto = document.getElementById("tablaRecursosCostos").querySelectorAll('.contenido-tabla tr');
+                let numFilasCosto = filasCosto.length;
+                let celdasCosto = filasCosto[numFilasCosto-1].querySelectorAll('td');
+                //let numCeldasCosto = celdasCosto.length;                
+
+                let gasto = parseInt(celdasCosto[indice].textContent,10);
+                if (opcion == 'op3') {
+                  gasto = gasto*(0.5);
+                  
+                }
+                //console.log("Gasto["+indice+"]: "+gasto);
+                
+                celdasGasto[indice].textContent = gasto;
+                acumulador += gasto;
+                filaFinal[indice] += gasto;
+              }else{
+                celdasGasto[indice].textContent = acumulador;
+                filaFinal[indice] += acumulador;
+              }
+            }            
+          });          
+        } else{
+          let celdasGasto = filasGasto[index].querySelectorAll('td');
+
+          celdasGasto.forEach((elemento, indice) => {
+            celdasGasto[indice].textContent = filaFinal[indice];            
+          });
+        }        
+      });      
+    }
+    else{
+      let celdasGasto = filasGasto[0].querySelectorAll('td');
+      celdasGasto.forEach((elemento, indice) => {
+        celdasGasto[indice].textContent = 0;        
+      });
+      //alert("No hay suficientes datos")
+    }
+    
+  }
+
 }
 
+//Clase encargada de crear el DOM de la seccion, operaciones, asi como creacion y envio 
+//de los arreglos json de la seccion Asignacion de Recursos
 export class Recursos{
 
   mesActual = null;
@@ -923,8 +1227,8 @@ export class Recursos{
     let seccion = document.getElementById('Recursos');
     let vista = ``;
     vista += `
-    <h3>Recursos de Asignación</h3>
-    <table class="table table-striped table-bordered table-dark text-center" id="tablaRecursos">
+    <h3>Recursos de Asignación</h3>    
+    <table class="table table-striped table-bordered border-info table-dark text-center" id="tablaRecursos">
       <thead>
         <tr>
           <th scope="col" style="width: 4%;"></th>
@@ -1141,7 +1445,11 @@ export class Recursos{
       });      
     }
     else{
-      alert("No hay suficientes datos")
+      let celdasRecurso = filasRecurso[0].querySelectorAll('td');
+      celdasRecurso.forEach((elemento, indice) => {
+        celdasRecurso[indice].textContent = 0;        
+      });
+      //alert("No hay suficientes datos")
     }
   }
 
@@ -1151,7 +1459,7 @@ export class Recursos{
     let vista = ``;
     vista += `
     <h3>Costo de Asignacion de Recursos</h3>
-    <table class="table table-striped table-bordered table-dark text-center" id="tablaRecursosCostos">
+    <table class="table table-striped table-bordered border-info table-dark text-center" id="tablaRecursosCostos">
       <thead>
         <tr>
           <th scope="col" style="width: 4%;"></th>
@@ -1301,7 +1609,11 @@ export class Recursos{
       });      
     }
     else{
-      alert("No hay suficientes datos")
+      let celdasCosto = filasCosto[0].querySelectorAll('td');
+      celdasCosto.forEach((elemento, indice) => {
+        celdasCosto[indice].textContent = 0;        
+      });
+      //alert("No hay suficientes datos")
     }
 
 
@@ -1313,7 +1625,7 @@ export class Recursos{
     let vista = ``;
     vista += `
     <h3>Resumen de Costos y Recursos</h3>
-    <table class="table table-striped table-bordered table-dark text-center" id="tablaRecursosResumen">
+    <table class="table table-striped table-bordered border-info table-dark text-center" id="tablaRecursosResumen">
       <thead>
         <tr>
           <th scope="col" style="width: 4%;"></th>
@@ -1470,7 +1782,11 @@ export class Recursos{
       });      
     }
     else{
-      alert("No hay suficientes datos")
+      let celdasResumen = filasResumen[0].querySelectorAll('td');
+      celdasResumen.forEach((elemento, indice) => {
+        celdasResumen[indice].textContent = 0;        
+      });
+      //alert("No hay suficientes datos")
     }
   }
 }
