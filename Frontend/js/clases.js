@@ -1,18 +1,21 @@
 //Lista de meses utilizados para la creacion de titulos en cada tabla
 const listaMeses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
+import { Calcular } from "../js/edicion.js";
 //Funcion que indica el nuevo valor de un campo editable
 //asignada al event listener OnChange de los campos editables
 function realizarCalculos(a){
-  console.log(a.target.id+" cambio a "+a.target.value);
+  //console.log(a.target.id+" cambio a "+a.target.value);
+  Calcular(a);
 }
 
 //Funcion para revisar que el valor ingresado en un editable este entre  1 y 100
 function revisarValor(a){
   if (a.target.value < 1 || a.target.value > 100 || a.target.value == null){
     alert("El valor ingresado debe estar entre 1 y 100");
-    a.target.value = 1;
+    a.target.value = 1;    
   }  
+  Calcular(a);
 }
 
 //Clase encargada de crear el DOM de la seccion y operaciones de la seccion Resumen Financiero
@@ -23,10 +26,10 @@ export class ResumenFinanciero{
     let vista = ``;
     vista += `
     <h3>Resumen Financiero</h3>
-    <table class="table table-bordered table-striped table-primary text-center" style="max-width: 600px;">
+    <table class="table table-bordered table-striped table-primary text-center" style="max-width: 600px;" id="tablaResumenFinanciero">
       <thead>
       </thead>
-      <tbody id="contenido-tabla">
+      <tbody class="contenido-tabla">
         <tr>
           <th style="width: 10%;">Ventas</th>
           <td style="width: 20%;"></td>
@@ -47,6 +50,50 @@ export class ResumenFinanciero{
     </table>  
     `;
     seccion.innerHTML = vista;
+  }
+
+  calcularValor(){
+    let filasResumenF = document.getElementById("tablaResumenFinanciero").querySelectorAll('.contenido-tabla tr');
+    let celdaVentas = filasResumenF[0].querySelector('td');
+    let celdaCostos = filasResumenF[1].querySelector('td');
+    let celdaMargen = filasResumenF[2].querySelector('td');
+    let celdaPorcentaje = filasResumenF[3].querySelector('td');
+    
+    let filasFlujo = document.getElementById("tablaFlujoDeEfectivo").querySelectorAll('.contenido-tabla tr');
+    let celdasIngresos = filasFlujo[0].querySelectorAll('td');
+    let celdasEgresos = filasFlujo[1].querySelectorAll('td');
+    let numCeldas = celdasIngresos.length;
+
+    let totalIngresos = parseInt(celdasIngresos[numCeldas-1].textContent,10);
+    let totalEgresos = parseInt(celdasEgresos[numCeldas-1].textContent,10);
+    let resultado = totalIngresos - totalEgresos;
+    let porcentaje = 0;
+
+    if (totalIngresos != 0) {
+      porcentaje = ((resultado/totalIngresos)*100).toFixed(2);
+      celdaPorcentaje.textContent = porcentaje+" %";
+    }else{
+      porcentaje = -1;
+      celdaPorcentaje.textContent = " ";
+    }
+     
+
+    celdaVentas.textContent = totalIngresos;
+    celdaCostos.textContent = totalEgresos;
+    celdaMargen.textContent = resultado;
+    
+
+    if (resultado < 0) {
+      celdaMargen.style.color="red";                  
+    }else{
+      celdaMargen.style.color="green";
+    }
+
+    if (porcentaje < 0) {
+      celdaPorcentaje.style.color="red";                  
+    }else{
+      celdaPorcentaje.style.color="green";
+    }
   }
 
 }
@@ -163,7 +210,123 @@ export class FlujoDeEfectivo{
     this.mesActual --;
     if (this.mesActual < 0) { this.mesActual = 11; }
   }
-  
+
+  calcularValor(){
+    let filasFlujo = document.getElementById("tablaFlujoDeEfectivo").querySelectorAll('.contenido-tabla tr');
+    let filaIngresos = filasFlujo[0];
+    let filaEgresos = filasFlujo[1];
+    let filaTotal = filasFlujo[2];
+    let filaAcumulado = filasFlujo[3];
+    
+    let numCeldas = filasFlujo[0].querySelectorAll('td').length;
+
+    //console.log("celdas:"+numCeldas);
+
+    if (numCeldas > 1) {
+
+      filasFlujo.forEach((element, index) => {
+
+        if (index < 3) {
+          let celdasFlujo = filasFlujo[index].querySelectorAll('td');
+          let acumulador = 0;   
+
+          celdasFlujo.forEach((elemento, indice) => {
+            
+            //Ingresos
+            if (index == 0) {
+              if (indice < (numCeldas-1)) {
+                
+                let ingreso = parseInt(celdasFlujo[indice].querySelector('input').value,10);                
+                acumulador += ingreso; 
+              }else{
+                celdasFlujo[indice].textContent = acumulador;             
+              }
+            //Egresos
+            }else if( index == 1){
+              if (indice < (numCeldas-1)) {
+                let filasCosto = document.getElementById("tablaCostos").querySelectorAll('.contenido-tabla tr');
+                let numFilasCosto = filasCosto.length;
+                let celdasCosto = filasCosto[numFilasCosto-1].querySelectorAll('td');
+
+                let filasGasto = document.getElementById("tablaGastos").querySelectorAll('.contenido-tabla tr');
+                let numFilasGasto = filasGasto.length;
+                let celdasGasto = filasGasto[numFilasGasto-1].querySelectorAll('td');
+
+                let costo = parseInt(celdasCosto[indice].textContent,10);
+                let gasto = parseInt(celdasGasto[indice].textContent,10);
+                let resultado = costo + gasto;
+
+                celdasFlujo[indice].textContent = resultado;
+                acumulador += resultado;    
+              }else{
+                celdasFlujo[indice].textContent = acumulador;
+              }
+            }
+            //Total
+            else if( index == 2){
+              if (indice < (numCeldas-1)) {
+
+                let celdasIngresos = filasFlujo[index-2].querySelectorAll('td');
+                let celdasEgresos = filasFlujo[index-1].querySelectorAll('td');
+                
+                let ingreso = parseInt(celdasIngresos[indice].querySelector('input').value,10);
+                let egreso = parseInt(celdasEgresos[indice].textContent,10);
+                let resultado = ingreso - egreso;
+
+                celdasFlujo[indice].textContent = resultado;
+                if (resultado < 0) {
+                  celdasFlujo[indice].style.color="red";                  
+                }else{
+                  celdasFlujo[indice].style.color="green";
+                }
+                acumulador += resultado; 
+              }else{
+                celdasFlujo[indice].textContent = acumulador;
+              }
+            }            
+          });          
+        } else{
+          let celdasTotal = filasFlujo[index-1].querySelectorAll('td');
+          let celdasFlujo = filasFlujo[index].querySelectorAll('td');
+
+          celdasFlujo.forEach((elemento, indice) => {
+            if (indice != 0) {
+              if (indice == numCeldas-1) {
+                celdasFlujo[indice].textContent = " ";
+                
+              }else{
+                let anterior = parseInt(celdasFlujo[indice-1].textContent,10);              
+                let resultado = anterior + parseInt(celdasTotal[indice].textContent,10);              
+                celdasFlujo[indice].textContent = resultado;
+                if (resultado < 0) {
+                  celdasFlujo[indice].style.color="red";                  
+                }else{
+                  celdasFlujo[indice].style.color="green";
+                } 
+              }
+                          
+            }else{
+              let resultado = parseInt(celdasTotal[indice].textContent,10);
+              celdasFlujo[indice].textContent = resultado;
+              if (resultado < 0) {
+                celdasFlujo[indice].style.color="red";                  
+              }else{
+                celdasFlujo[indice].style.color="green";
+              }
+            }        
+          });
+        }        
+      });      
+    }
+    else{
+      filaIngresos.querySelector('td').textContent = 0;
+      filaEgresos.querySelector('td').textContent = 0;
+      filaTotal.querySelector('td').textContent = 0;
+      filaAcumulado.querySelector('td').textContent = 0;
+
+      //alert("No hay suficientes datos")
+    }
+  }  
 
 }
 
@@ -269,59 +432,108 @@ export class EstadoDeResultados{
     for (let index = 0; index < numCeldas-1; index++) {
       filaFinal[index] = 0; 
     }    
-    console.log(filaFinal);
+    //console.log(filaFinal);
     //console.log("filas"+numFilas);
-    console.log("celdas:"+numCeldas);
+    //console.log("celdas:"+numCeldas);
 
     if (numCeldas > 1) {
-      filasCosto.forEach((element, index) => {
 
-        if (index < (numFilas-1)) {  
-          let celdasCosto = filasCosto[index].querySelectorAll('td');
-          let opcion = filasCosto[index].querySelector('th').className;
-          //console.log("opcion:"+opcion);
+      filasResultado.forEach((element, index) => {
+
+        if (index < 3) {
+          let celdasResultado = filasResultado[index].querySelectorAll('td');
           let acumulador = 0;          
 
-          celdasCosto.forEach((elemento, indice) => {
-
-            if (opcion == 'op1') {
+          celdasResultado.forEach((elemento, indice) => {
+            
+            //Ventas
+            if (index == 0) {
               if (indice < (numCeldas-1)) {
-                let costo = parseInt(celdasCosto[indice].querySelector('input').value);
-                acumulador += costo;
-                //console.log("Acumu: "+acumulador);
-                filaFinal[indice] += costo;
+                let filasIngreso = document.getElementById("tablaIngresos").querySelectorAll('.contenido-tabla tr');
+                let numFilasIngreso = filasIngreso.length;
+                let celdasIngreso = filasIngreso[numFilasIngreso-1].querySelectorAll('td');
+
+                let venta = parseInt(celdasIngreso[indice].textContent,10);
+                celdasResultado[indice].textContent = venta;
+                acumulador += venta; 
               }else{
-                celdasCosto[indice].textContent = acumulador;
-                filaFinal[indice] += acumulador;
-              }              
-            }else{
+                celdasResultado[indice].textContent = acumulador;                
+              }
+            }else if( index == 1){
               if (indice < (numCeldas-1)) {
-                let filasCostoR = document.getElementById("tablaRecursosCostos").querySelectorAll('.contenido-tabla tr');
-                let numFilasCostoR = filasCostoR.length;
-                let celdasCostoR = filasCostoR[numFilasCostoR-1].querySelectorAll('td');
-                //let numCeldasCosto = celdasCosto.length;                
+                let filasCosto = document.getElementById("tablaCostos").querySelectorAll('.contenido-tabla tr');
+                let numFilasCosto = filasCosto.length;
+                let celdasCosto = filasCosto[numFilasCosto-1].querySelectorAll('td');
 
-                let costo = parseInt(celdasCostoR[indice].textContent,10);
-                if (opcion == 'op3') {
-                  costo = costo*(0.5);
-                  
-                }
-                //console.log("Gasto["+indice+"]: "+gasto);
+                let filasGasto = document.getElementById("tablaGastos").querySelectorAll('.contenido-tabla tr');
+                let numFilasGasto = filasGasto.length;
+                let celdasGasto = filasGasto[numFilasGasto-1].querySelectorAll('td');
+
+                let costo = parseInt(celdasCosto[indice].textContent,10);
+                let gasto = parseInt(celdasGasto[indice].textContent,10);
+                let resultado = costo + gasto;
+
+                celdasResultado[indice].textContent = resultado;
+                acumulador += resultado;    
+              }else{
+                celdasResultado[indice].textContent = acumulador;
+              }
+              
+            }else if( index == 2){
+              if (indice < (numCeldas-1)) {
+
+                let celdasVentas = filasResultado[index-2].querySelectorAll('td');
+                let celdasCostos = filasResultado[index-1].querySelectorAll('td');
                 
-                celdasCosto[indice].textContent = costo;
-                acumulador += costo;
-                filaFinal[indice] += costo;
+                let venta = parseInt(celdasVentas[indice].textContent,10);
+                let costo = parseInt(celdasCostos[indice].textContent,10);
+                let resultado = venta - costo;
+
+                celdasResultado[indice].textContent = resultado;
+                if (resultado < 0) {
+                  celdasResultado[indice].style.color="red";                  
+                }else{
+                  celdasResultado[indice].style.color="green";
+                }
+
+                acumulador += resultado;   
               }else{
-                celdasCosto[indice].textContent = acumulador;
-                filaFinal[indice] += acumulador;
+                celdasResultado[indice].textContent = acumulador;
               }
             }            
           });          
         } else{
-          let celdasCosto = filasCosto[index].querySelectorAll('td');
+          let celdasMargen = filasResultado[index-1].querySelectorAll('td');
+          let celdasResultado = filasResultado[index].querySelectorAll('td');
 
-          celdasCosto.forEach((elemento, indice) => {
-            celdasCosto[indice].textContent = filaFinal[indice];            
+          celdasResultado.forEach((elemento, indice) => {
+            if (indice != 0) {
+              if (indice == numCeldas-1) {
+                celdasResultado[indice].textContent = " ";
+                
+              }else{
+                let anterior = parseInt(celdasResultado[indice-1].textContent,10);              
+                let resultado = anterior + parseInt(celdasMargen[indice].textContent,10);              
+                celdasResultado[indice].textContent = resultado;
+                if (resultado < 0) {
+                  celdasResultado[indice].style.color="red";                  
+                }else{
+                  celdasResultado[indice].style.color="green";
+                } 
+              }
+                          
+            }else{
+              let resultado = parseInt(celdasMargen[indice].textContent,10);
+              celdasResultado[indice].textContent = resultado;
+              if (resultado < 0) {
+                celdasResultado[indice].style.color="red";                  
+              }else{
+                celdasResultado[indice].style.color="green";
+              }
+            }
+
+            
+                   
           });
         }        
       });      
@@ -331,8 +543,6 @@ export class EstadoDeResultados{
       filaCostosR.querySelector('td').textContent = 0;
       filaMargenR.querySelector('td').textContent = 0;
       filaSaldoFinal.querySelector('td').textContent = 0;
-      
-     
 
       //alert("No hay suficientes datos")
     }

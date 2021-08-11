@@ -1,5 +1,19 @@
 import { ResumenFinanciero, FlujoDeEfectivo, EstadoDeResultados, Ingresos, CostosDirectos, GastosAdministrativos, Recursos } from "../js/clases.js";
 
+
+export function Calcular(a){
+  //console.log("calculando valores");
+  recursos.calcularValorRecursos();
+  recursos.calcularValorCostos();
+  recursos.calcularValorResumen();
+
+  gastos.calcularValor();
+  costos.calcularValor();
+  ingresos.calcularValor();
+  estado.calcularValor();
+  flujo.calcularValor();
+  resumen.calcularValor();
+}
 /*
 Instanciacion de los objetos definidos en clases.js
 pertenecientes a cada seccion del ticket
@@ -32,6 +46,7 @@ ingresos.crearIngresos();
 costos.crearCostosDirectos();
 gastos.crearGastosAdministrativos();
 recursos.crearRecursos();
+Calcular(); 
 
 //Guardado de los botones para posteriormente agregarles el event listener
 const guardarPresupuesto = document.getElementById('guardarPresupuesto');
@@ -154,7 +169,7 @@ agregarMes.addEventListener('click', () => {
     rolesRecursos.push(respRecursos);
 
   }
-  
+  Calcular();  
 });
 
 //Eliminacin de columnas
@@ -173,6 +188,8 @@ eliminarMes.addEventListener('click', () => {
   conceptosCostos.pop();
   conceptosGastos.pop();
   rolesRecursos.pop();
+  
+  Calcular();
 });
 
 
@@ -200,7 +217,8 @@ agregarIngreso.addEventListener('click', () => {
         conceptosIngresos[index].push(element);
       }  
     });
-  }  
+  }
+  Calcular();  
 });
 
 //eliminacion de una fila correspondiente a un ingreso
@@ -221,6 +239,8 @@ eliminarIngreso.addEventListener('click', () => {
   //si no, se solicita seleccionar un ingreso de la tabla
   else
     alert("selecciona un concepto de ingreso primero");  
+
+    Calcular(); 
 });
 
 //creacion de una fila correspondiente a un costo
@@ -243,7 +263,8 @@ agregarCosto.addEventListener('click', () => {
     }else{
       alert("Primero selecciona una opcion");
     }    
-  }  
+  } 
+  Calcular(); 
 });
 
 //eliminacion de una fila correspondiente a un costo
@@ -260,6 +281,8 @@ eliminarCosto.addEventListener('click', () => {
   }
   else
     alert("selecciona un concepto de costo primero");  
+
+    Calcular(); 
 });
 
 //creacion de una fila correspondiente a un gasto
@@ -292,7 +315,8 @@ agregarGasto.addEventListener('click', () => {
     }else{
       alert("Primero selecciona una opcion");
     }    
-  }  
+  }
+  Calcular();   
 });
 
 //eliminacion de una fila correspondiente a un gasto
@@ -308,7 +332,9 @@ eliminarGasto.addEventListener('click', () => {
     gastos.eliminarFila(gastos.focusActual);
   }
   else
-    alert("selecciona un concepto de gasto primero");  
+    alert("selecciona un concepto de gasto primero");
+    
+  Calcular(); 
 });
 
 //creacion de una fila correspondiente a un recurso
@@ -330,7 +356,9 @@ agregarRecurso.addEventListener('click', () => {
       }  
     });
     
-  }  
+  }
+
+  Calcular(); 
 });
 
 //eliminacion de una fila correspondiente a un recurso
@@ -347,6 +375,8 @@ eliminarRecurso.addEventListener('click', () => {
   }
   else
     alert("selecciona un rol de recurso primero");  
+
+  Calcular(); 
 });
 
 
@@ -361,7 +391,7 @@ guardarPresupuesto.addEventListener('click', () => {
 
 //Funcionalidad de calculo de valores en cada tabla (TEMPORAL)
 eliminarPresupuesto.addEventListener('click', () => { 
-
+/*
   //console.log("Realizando operaciones");
   recursos.calcularValorRecursos();
   recursos.calcularValorCostos();
@@ -371,5 +401,7 @@ eliminarPresupuesto.addEventListener('click', () => {
   costos.calcularValor();
   ingresos.calcularValor();
   estado.calcularValor();
+  flujo.calcularValor();
+  resumen.calcularValor();*/
   
 });
