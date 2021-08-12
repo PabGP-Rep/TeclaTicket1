@@ -248,9 +248,19 @@ agregarCosto.addEventListener('click', () => {
   do{
     var concepto = window.prompt("Por favor ingrese el concepto del costo", "");
   }while(concepto == "");
-  if (concepto != null) {
+
+  if (costos.opcionActual == 3) {
+    do{
+      var porcentaje = window.prompt("Por favor ingrese el porcentaje", "");
+    }while(isNaN(porcentaje) || porcentaje < 1 || porcentaje > 100);    
+  }else{ 
+    var porcentaje = 0;
+  }
+
+
+  if (concepto != null && porcentaje != null) {
     if (costos.opcionActual != null) {
-      let respuesta = costos.agregarFila(concepto, costos.opcionActual, 0);      
+      let respuesta = costos.agregarFila(concepto, costos.opcionActual, 0, porcentaje);      
       respuesta.forEach((element, index) => {
         if (index >= conceptosCostos.length) {
           let array = [];
@@ -381,7 +391,7 @@ eliminarRecurso.addEventListener('click', () => {
 
 
 guardarPresupuesto.addEventListener('click', () => {
-  //console.log(mesesContemplados);
+  console.log(mesesContemplados);
   //console.log(conceptosIngresos);
   //console.log(conceptosCostos);
   //console.log(conceptosGastos);
@@ -391,17 +401,10 @@ guardarPresupuesto.addEventListener('click', () => {
 
 //Funcionalidad de calculo de valores en cada tabla (TEMPORAL)
 eliminarPresupuesto.addEventListener('click', () => { 
-/*
-  //console.log("Realizando operaciones");
-  recursos.calcularValorRecursos();
-  recursos.calcularValorCostos();
-  recursos.calcularValorResumen();
-
-  gastos.calcularValor();
-  costos.calcularValor();
-  ingresos.calcularValor();
-  estado.calcularValor();
-  flujo.calcularValor();
-  resumen.calcularValor();*/
+  //recursos.guardarValor(rolesRecursos);
+  //gastos.guardarValor(conceptosGastos);
+  //costos.guardarValor(conceptosCostos);
+  //ingresos.guardarValor(conceptosIngresos);
+  flujo.guardarValor(mesesContemplados, "abcdadw");
   
 });

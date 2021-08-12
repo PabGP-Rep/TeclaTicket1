@@ -151,7 +151,7 @@ export class FlujoDeEfectivo{
     let filas = tabla.querySelectorAll('tr');
     filas.forEach((element, index) => {
       let celda = element.insertCell(element.querySelectorAll('td').length);
-      celda.setAttribute('id',`celda${mes}${index}`);
+      celda.setAttribute('class',`${mes}`);
       if (index == 0) {
         celda.textContent = mes;
       }
@@ -177,7 +177,7 @@ export class FlujoDeEfectivo{
     let filas = tabla.querySelectorAll('tr');
     filas.forEach((element, index) => {
       let celda = element.insertCell(element.querySelectorAll('td').length);
-      celda.setAttribute('id',`celda${mes}${index}`);
+      celda.setAttribute('class',`${mes}`);
       if (index == 0) {
         celda.textContent = mes;
       }
@@ -327,6 +327,36 @@ export class FlujoDeEfectivo{
       //alert("No hay suficientes datos")
     }
   }  
+
+  guardarValor(meses, idPresupuesto){
+    
+    let numMeses = meses.length;
+    console.log("Meses:"+ numMeses);
+
+    let filaF = document.getElementById("tablaFlujoDeEfectivo").querySelector('.contenido-tabla tr');
+    let celdasF = filaF.querySelectorAll('td');
+    let inicial = false;
+
+    for (let indice = 0; indice < numMeses; indice++) {
+      if (indice == 0) {
+        inicial = true;        
+      }else{
+        inicial = false;
+      }
+
+      let nombre = celdasF[indice].className;
+      let cantidad = parseInt(celdasF[indice].querySelector('input').value,10);
+
+      console.log("Celda:"+indice);
+      console.log("Inicial: "+inicial+" Nombre: "+nombre+" cantidad:"+cantidad);
+
+      meses[indice].idPresupuesto = idPresupuesto;
+      meses[indice].inicial = inicial;
+      meses[indice].nombre = nombre;
+      meses[indice].cantidad = cantidad;
+    }            
+    
+  }
 
 }
 
@@ -625,7 +655,6 @@ export class Ingresos{
     let celdas = filas[0].querySelectorAll('td').length
 
     filas.forEach((element, index) => {
-      //console.log("agregandooo en"+celdas);
       let celda = element.insertCell(celdas);
       celda.setAttribute('id',`celda${mes}${index}`);
       if (index == 0) {
@@ -669,7 +698,7 @@ export class Ingresos{
     let filas = tabla.querySelectorAll('tr');
     let numFilas = filas.length;
     let nuevaFila = tabla.insertRow(numFilas-1);    
-    nuevaFila.setAttribute('class',`concepto_${concepto}`);
+    nuevaFila.setAttribute('class',`${concepto}`);
     let columnas = filas[0].querySelectorAll('td').length
     for (let index = 0; index <= columnas; index++) {      
       if (index == 0) {
@@ -764,6 +793,33 @@ export class Ingresos{
     }
     
   }
+
+  guardarValor(ingresos){
+    
+    let numColumnasA = ingresos.length;    
+    let numFilasA = ingresos[0].length;
+
+    //console.log("tabla Ingresos tamaño:");
+    //console.log("filas: " + numFilasA + " Columnas: " + numColumnasA);    
+
+    let filasI = document.getElementById("tablaIngresos").querySelectorAll('.contenido-tabla tr');
+
+    for (let index = 0; index < numFilasA; index++) {
+
+      let celdasI = filasI[index].querySelectorAll('td');
+      let conceptoI = filasI[index].className; 
+
+      for (let indice = 0; indice < numColumnasA; indice++) {          
+        let cantidad = parseInt(celdasI[indice].querySelector('input').value,10);   
+
+        //console.log("Fila:"+index+" columna:"+indice);
+        //console.log("Concepto: "+conceptoI+" Cantidad: "+cantidad);
+
+        ingresos[indice][index].concepto = conceptoI;
+        ingresos[indice][index].cantidad = cantidad;
+      }            
+    }
+  }
   
 }
 
@@ -774,7 +830,6 @@ export class CostosDirectos{
   mesActual = null;
   focusActual = null;
   opcionActual = null;
-  porcentaje = null;
 
   crearCostosDirectos(){
     let seccion = document.getElementById('Costos');
@@ -831,6 +886,7 @@ export class CostosDirectos{
     let filas = tabla.querySelectorAll('tr');    
     let numFilas = filas.length;
     let celdas = filas[0].querySelectorAll('td').length;
+    let porcentaje = "";
 
     filas.forEach((element, index) => {
       let concepto = element.className;
@@ -843,8 +899,9 @@ export class CostosDirectos{
           opcion = 1;       
         }else if (element.querySelector('th').className == `op2`){
           opcion = 2;
-        }else if (element.querySelector('th').className == `op3`) {
+        }else{
           opcion = 3;
+          porcentaje = element.querySelector('th').className;
         }        
         let costo = { "idMes": celdas, "concepto": concepto, "opcion": opcion, "cantidad": 0, "opcionDos": null, "opcionTres": null };
         if (opcion == 1) {
@@ -860,16 +917,13 @@ export class CostosDirectos{
           costo.opcionDos = "tablaRecursos";          
           costo.opcionTres = null;
           celda.textContent = "opcion tipo 2";          
-        } else if (opcion == 3) {
+        } else{
           costo.opcion = 3;
           costo.cantidad = null;
           costo.opcionDos = null;
-          costo.opcionTres = "tablaRecursos";
+          costo.opcionTres = "tablaRecursos_"+porcentaje;
           celda.textContent = "opcion tipo 3";
-        } else{
-          costo = null;
-          celda.textContent = "Sepa";
-        }
+        } 
         costosColumna.push(costo);
       }else{
         celda.textContent = `[total${mes}]`;
@@ -887,7 +941,8 @@ export class CostosDirectos{
     let tabla = document.getElementById('tablaCostos');
     let filas = tabla.querySelectorAll('tr');
     let numFilas = filas.length;
-    let celdas = filas[0].querySelectorAll('td').length
+    let celdas = filas[0].querySelectorAll('td').length;
+    let porcentaje = "";
 
     filas.forEach((element, index) => {
       let concepto = element.className;
@@ -900,8 +955,9 @@ export class CostosDirectos{
           opcion = 1;       
         }else if (element.querySelector('th').className == `op2`){
           opcion = 2;
-        }else if (element.querySelector('th').className == `op3`) {
+        }else{
           opcion = 3;
+          porcentaje = element.querySelector('th').className;
         }
         let costo = { "idMes": celdas, "concepto": concepto, "opcion": opcion, "cantidad": 0, "opcionDos": null, "opcionTres": null };
         if (opcion == 1) {
@@ -918,15 +974,12 @@ export class CostosDirectos{
           costo.opcionTres = null;
           celda.textContent = "opcion tipo 2"
           
-        } else if (opcion == 3) {
+        } else {
           costo.opcion = 3;
           costo.cantidad = null;
           costo.opcionDos = null;
-          costo.opcionTres = "tablaRecursos";
+          costo.opcionTres = "tablaRecursos_"+porcentaje;
           celda.textContent = "opcion tipo 3"
-        } else{
-          costo = null;
-          celda.textContent = "Sepa"
         }
         costosColumna.push(costo);
       }else{
@@ -952,7 +1005,7 @@ export class CostosDirectos{
     if (this.mesActual < 0) { this.mesActual = 11; }
   }
 
-  agregarFila(concepto, opcion, cantidad){
+  agregarFila(concepto, opcion, cantidad, porcentaje){
     let costosFila = [];
     let tabla = document.getElementById('tablaCostos');
     let filas = tabla.querySelectorAll('tr');
@@ -963,7 +1016,11 @@ export class CostosDirectos{
     for (let index = 0; index <= columnas; index++) {      
       if (index == 0) {
         let celda = document.createElement('th');
-        celda.setAttribute('class',`op${opcion}`);
+        if (opcion == 3) {
+          celda.setAttribute('class',`${porcentaje}`);          
+        }else{
+          celda.setAttribute('class',`op${opcion}`);
+        }        
         let vista = '';
         vista += `          
           <input type="radio" class="btn-check" name="costos" id="${concepto}" autocomplete="off">
@@ -992,15 +1049,12 @@ export class CostosDirectos{
           costo.opcionDos = "tablaRecursos";          
           costo.opcionTres = null;
           celda.textContent = "opcion tipo 2"; 
-        } else if (opcion == 3) {
+        } else {
           costo.opcion = 3;
           costo.cantidad = null;
           costo.opcionDos = null;
-          costo.opcionTres = "tablaRecursos";
+          costo.opcionTres = "tablaRecursos_"+opcion;
           celda.textContent = "opcion tipo 3";
-        } else{
-          costo = null;
-          celda.textContent = "Sepa";
         }
         costosFila.push(costo);
       }else{
@@ -1027,10 +1081,7 @@ export class CostosDirectos{
 
     for (let index = 0; index < numCeldas; index++) {
       filaFinal[index] = 0; 
-    }    
-    //console.log(filaFinal);
-    //console.log("filas"+numFilas);
-    //console.log("celdas:"+numCeldas);
+    }     
 
     if (numFilas > 1) {
       filasCosto.forEach((element, index) => {
@@ -1038,7 +1089,6 @@ export class CostosDirectos{
         if (index < (numFilas-1)) {  
           let celdasCosto = filasCosto[index].querySelectorAll('td');
           let opcion = filasCosto[index].querySelector('th').className;
-          //console.log("opcion:"+opcion);
           let acumulador = 0;          
 
           celdasCosto.forEach((elemento, indice) => {
@@ -1047,7 +1097,6 @@ export class CostosDirectos{
               if (indice < (numCeldas-1)) {
                 let costo = parseInt(celdasCosto[indice].querySelector('input').value);
                 acumulador += costo;
-                //console.log("Acumu: "+acumulador);
                 filaFinal[indice] += costo;
               }else{
                 celdasCosto[indice].textContent = acumulador;
@@ -1058,14 +1107,13 @@ export class CostosDirectos{
                 let filasCostoR = document.getElementById("tablaRecursosCostos").querySelectorAll('.contenido-tabla tr');
                 let numFilasCostoR = filasCostoR.length;
                 let celdasCostoR = filasCostoR[numFilasCostoR-1].querySelectorAll('td');
-                //let numCeldasCosto = celdasCosto.length;                
 
                 let costo = parseInt(celdasCostoR[indice].textContent,10);
-                if (opcion == 'op3') {
-                  costo = costo*(0.5);
+                if (opcion != 'op2') {
+                  let porcentaje = parseInt(opcion, 10);
+                  costo = costo*(porcentaje/100);
                   
-                }
-                //console.log("Gasto["+indice+"]: "+gasto);
+                }              
                 
                 celdasCosto[indice].textContent = costo;
                 acumulador += costo;
@@ -1095,6 +1143,55 @@ export class CostosDirectos{
     
   }
 
+  guardarValor(costos){
+    
+    let numColumnasA = costos.length;    
+    let numFilasA = costos[0].length;
+
+    console.log("tabla Costos tamaño:");
+    console.log("filas: " + numFilasA + " Columnas: " + numColumnasA);
+    
+
+    let filasC = document.getElementById("tablaCostos").querySelectorAll('.contenido-tabla tr');
+
+    for (let index = 0; index < numFilasA; index++) {
+
+      let celdasC = filasC[index].querySelectorAll('td');
+      let conceptoC = filasC[index].className;
+      let opcion = 0;
+      let cantidad = null;
+      let opcionDos = null;
+      let opcionTres = null;
+      let porcentaje = null;
+
+      if (filasC[index].querySelector('th').className == "op1") {
+        opcion = 1;
+      }else if(filasC[index].querySelector('th').className == "op2"){
+        opcion = 2;
+        opcionDos = "tablaRecursosCostos";
+      }else{
+        opcion = 3;
+        porcentaje = filasC[index].querySelector('th').className;
+        opcionTres = "tablaRecursosCostos_"+porcentaje;
+      }
+
+      for (let indice = 0; indice < numColumnasA; indice++) {  
+        if (opcion == 1) {
+          cantidad = parseInt(celdasC[indice].querySelector('input').value,10);           
+        }      
+
+        console.log("Fila:"+index+" columna:"+indice);
+        console.log("Concepto: "+conceptoC+" Opcion:"+opcion+" Cantidad: "+cantidad+" op2: " +opcionDos+" op3"+opcionTres);
+
+        costos[indice][index].concepto = conceptoC;
+        costos[indice][index].opcion = opcion;
+        costos[indice][index].cantidad = cantidad
+        costos[indice][index].opcionDos = opcionDos;
+        costos[indice][index].opcionTres = opcionTres;
+      }            
+    }
+  }
+
 }
 
 //Clase encargada de crear el DOM de la seccion, operaciones, asi como creacion y envio 
@@ -1103,8 +1200,7 @@ export class GastosAdministrativos{
 
   mesActual = null;
   focusActual = null;
-  opcionActual = null;
-  porcentaje = null;
+  opcionActual = null;  
 
   crearGastosAdministrativos(){
     let seccion = document.getElementById('Gastos');
@@ -1161,6 +1257,7 @@ export class GastosAdministrativos{
     let filas = tabla.querySelectorAll('tr');    
     let numFilas = filas.length;
     let celdas = filas[0].querySelectorAll('td').length;
+    let porcentaje = "";
 
     filas.forEach((element, index) => {
       let concepto = element.className;
@@ -1168,13 +1265,14 @@ export class GastosAdministrativos{
       celda.setAttribute('id',`celda${mes}${index}`);
       if (index == 0) {
         celda.textContent = mes;
-      }else if (index != numFilas-1){        
+      }else if (index != numFilas-1){
         if (element.querySelector('th').className == `op1`) {
           opcion = 1;       
-        }else if (element.querySelector('th').className == `$op2`){
+        }else if (element.querySelector('th').className == `op2`){
           opcion = 2;
-        }else if (element.querySelector('th').className == `op3`) {
+        }else{          
           opcion = 3;
+          porcentaje = element.querySelector('th').className;
         }        
         let gasto = { "idMes": celdas, "concepto": concepto, "opcion": opcion, "cantidad": 0, "opcionDos": null, "opcionTres": null };
         if (opcion == 1) {
@@ -1190,16 +1288,14 @@ export class GastosAdministrativos{
           gasto.opcionDos = "tablaRecursos";          
           gasto.opcionTres = null;
           celda.textContent = "opcion tipo 2";          
-        } else if (opcion == 3) {
+        } else{
           gasto.opcion = 3;
           gasto.cantidad = null;
           gasto.opcionDos = null;
-          gasto.opcionTres = "tablaRecursos";
+          gasto.opcionTres = "tablaRecursos_"+porcentaje;
           celda.textContent = "opcion tipo 3";
-        } else{
-          gasto = null;
-          celda.textContent = "Sepa";
         }
+
         gastosColumna.push(gasto);
       }else{
         celda.textContent = `[total${mes}]`;
@@ -1217,7 +1313,8 @@ export class GastosAdministrativos{
     let tabla = document.getElementById('tablaGastos');
     let filas = tabla.querySelectorAll('tr');
     let numFilas = filas.length;
-    let celdas = filas[0].querySelectorAll('td').length
+    let celdas = filas[0].querySelectorAll('td').length;
+    let porcentaje = "";
 
     filas.forEach((element, index) => {
       let concepto = element.className;
@@ -1230,7 +1327,8 @@ export class GastosAdministrativos{
           opcion = 1;       
         }else if (element.querySelector('th').className == `op2`){
           opcion = 2;
-        }else if (element.querySelector('th').className == `op3`) {
+        }else{
+          porcentaje = element.querySelector('th').className;
           opcion = 3;
         }
         let gasto = { "idMes": celdas, "concepto": concepto, "opcion": opcion, "cantidad": 0, "opcionDos": null, "opcionTres": null };
@@ -1248,15 +1346,12 @@ export class GastosAdministrativos{
           gasto.opcionTres = null;
           celda.textContent = "opcion tipo 2"
           
-        } else if (opcion == 3) {
+        } else{
           gasto.opcion = 3;
           gasto.cantidad = null;
           gasto.opcionDos = null;
-          gasto.opcionTres = "tablaRecursos";
+          gasto.opcionTres = "tablaRecursos_"+porcentaje;
           celda.textContent = "opcion tipo 3"
-        } else{
-          gasto = null;
-          celda.textContent = "Sepa"
         }
         gastosColumna.push(gasto);
       }else{
@@ -1293,7 +1388,12 @@ export class GastosAdministrativos{
     for (let index = 0; index <= columnas; index++) {      
       if (index == 0) {
         let celda = document.createElement('th');
-        celda.setAttribute('class',`op${opcion}`);
+        if (opcion == 3) {
+          celda.setAttribute('class',`${porcentaje}`);          
+        }else{
+          celda.setAttribute('class',`op${opcion}`);
+        }
+        
         let vista = '';
         vista += `          
           <input type="radio" class="btn-check" name="gastos" id="${concepto}" autocomplete="off">
@@ -1322,16 +1422,13 @@ export class GastosAdministrativos{
           gasto.opcionDos = "tablaRecursosCostos";          
           gasto.opcionTres = null;
           celda.textContent = "opcion tipo 2"; 
-        } else if (opcion == 3) {
+        } else {
           gasto.opcion = 3;
           gasto.cantidad = null;
           gasto.opcionDos = null;
-          gasto.opcionTres = "tablaRecursosCostos_50";
-          celda.textContent = "opcion tipo 3";
-        } else{
-          gasto = null;
-          celda.textContent = "Sepa";
-        }
+          gasto.opcionTres = "tablaRecursosCostos_"+porcentaje;
+          celda.textContent = porcentaje+"%";
+        } 
         gastosFila.push(gasto);
       }else{
         let celda = nuevaFila.insertCell(index);
@@ -1357,17 +1454,13 @@ export class GastosAdministrativos{
     for (let index = 0; index < numCeldas; index++) {
       filaFinal[index] = 0; 
     }    
-    //console.log(filaFinal);
-    //console.log("filas"+numFilas);
-    //console.log("celdas:"+numCeldas);
 
     if (numFilas > 1) {
       filasGasto.forEach((element, index) => {
 
         if (index < (numFilas-1)) {  
           let celdasGasto = filasGasto[index].querySelectorAll('td');
-          let opcion = filasGasto[index].querySelector('th').className;
-          //console.log("opcion:"+opcion);
+          let opcion = filasGasto[index].querySelector('th').className;          
           let acumulador = 0;          
 
           celdasGasto.forEach((elemento, indice) => {
@@ -1387,14 +1480,13 @@ export class GastosAdministrativos{
                 let filasCosto = document.getElementById("tablaRecursosCostos").querySelectorAll('.contenido-tabla tr');
                 let numFilasCosto = filasCosto.length;
                 let celdasCosto = filasCosto[numFilasCosto-1].querySelectorAll('td');
-                //let numCeldasCosto = celdasCosto.length;                
 
                 let gasto = parseInt(celdasCosto[indice].textContent,10);
-                if (opcion == 'op3') {
-                  gasto = gasto*(0.5);
+                if (opcion != 'op2') {
+                  let porcentaje = parseInt(opcion,10);
+                  gasto = gasto*(porcentaje/100);
                   
                 }
-                //console.log("Gasto["+indice+"]: "+gasto);
                 
                 celdasGasto[indice].textContent = gasto;
                 acumulador += gasto;
@@ -1422,6 +1514,55 @@ export class GastosAdministrativos{
       //alert("No hay suficientes datos")
     }
     
+  }
+
+  guardarValor(gastos){
+    
+    let numColumnasA = gastos.length;    
+    let numFilasA = gastos[0].length;
+
+    //console.log("tabla Gastos tamaño:");
+    //console.log("filas: " + numFilasA + " Columnas: " + numColumnasA);
+    
+
+    let filasG = document.getElementById("tablaGastos").querySelectorAll('.contenido-tabla tr');
+
+    for (let index = 0; index < numFilasA; index++) {
+
+      let celdasG = filasG[index].querySelectorAll('td');
+      let conceptoG = filasG[index].className;
+      let opcion = 0;
+      let cantidad = null;
+      let opcionDos = null;
+      let opcionTres = null;
+      let porcentaje = null;
+
+      if (filasG[index].querySelector('th').className == "op1") {
+        opcion = 1;
+      }else if(filasG[index].querySelector('th').className == "op2"){
+        opcion = 2;
+        opcionDos = "tablaRecursosCostos";
+      }else{
+        opcion = 3;
+        porcentaje = filasG[index].querySelector('th').className;
+        opcionTres = "tablaRecursosCostos_"+porcentaje;
+      }
+
+      for (let indice = 0; indice < numColumnasA; indice++) {  
+        if (opcion == 1) {
+          cantidad = parseInt(celdasG[indice].querySelector('input').value,10);           
+        }      
+
+        //console.log("Fila:"+index+" columna:"+indice);
+        //console.log("Concepto: "+conceptoG+" Opcion:"+opcion+" Cantidad: "+cantidad+" op2: " +opcionDos+" op3"+opcionTres );
+
+        gastos[indice][index].concepto = conceptoG;
+        gastos[indice][index].opcion = opcion;
+        gastos[indice][index].cantidad = cantidad
+        gastos[indice][index].opcionDos = opcionDos;
+        gastos[indice][index].opcionTres = opcionTres;
+      }            
+    }
   }
 
 }
@@ -1999,4 +2140,36 @@ export class Recursos{
       //alert("No hay suficientes datos")
     }
   }
+
+  guardarValor(recursos){
+    
+    let numColumnasA = recursos.length;    
+    let numFilasA = recursos[0].length;
+
+    //console.log("tabla Recursos tamaño:");
+    //console.log("filas: " + numFilasA + " Columnas: " + numColumnasA);
+    
+
+    let filasR = document.getElementById("tablaRecursos").querySelectorAll('.contenido-tabla tr');
+
+    for (let index = 0; index < numFilasA; index++) {
+
+      let celdasR = filasR[index].querySelectorAll('td');
+      let rolR = filasR[index].className;
+      let costoR = filasR[index].querySelector('th').className;
+
+      for (let indice = 0; indice < numColumnasA; indice++) {        
+        let porcentajeR = celdasR[indice].querySelector('input').value; 
+
+       // console.log("Fila:"+index+" columna:"+indice);
+       // console.log("Rol: "+rolR +" Porcentaje: "+porcentajeR+ " Costo: " + costoR );
+
+        recursos[indice][index].rol = rolR;
+        recursos[indice][index].porcentaje = parseInt(porcentajeR,10);
+        recursos[indice][index].costo = parseInt(costoR,10) ;
+      }            
+    }
+  }
+
+
 }
