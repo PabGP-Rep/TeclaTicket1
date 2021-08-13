@@ -12,7 +12,32 @@ class User {
       console.log(error);
       return error;
     }
+  }
+
+  searchUser = async (username, pass) => {
+    try {
+      let encontrado = await Usuario.findOne({
+        where: { nombre: username, pass: pass }
+      })
+      if (encontrado != null) {
+        console.log("Perfil encontrado con exito [SERVICE]");       
+        return encontrado;        
+      }else{
+       return 'Usuario o contraseña incorrectos';
+      }      
+    } catch (error) {
+      //console.log(error);
+      return error;
+    }
+  }
+
+  listUsers = async () => {
+    let usuarios = await Usuario.findAll();
+    console.log("Consulta exitosa [SERVICE]");
+    return usuarios;  
   }  
+  
+
 }
 
 module.exports = User;

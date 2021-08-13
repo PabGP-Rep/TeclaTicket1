@@ -1,13 +1,16 @@
+const { listarUsuarios } = require('../controllers/usuario.controller');
 const Usuario = require('../models/usuario.model');
 
 const usuarioExiste = async function(req,res,next) {
-  let listaUsuarios = await Usuario.findAll(
+  let listaUsuarios = await Usuario.findOne(
       {where: {nombre: req.body.nombre}}
   );
-  if(listaUsuarios.length > 0) {
-    return res.status(400).json('Usuario ya registrado')
+  
+  if (listaUsuarios != null){
+    return res.status(400).json('Usuario ya registrado');    
+  }else{
+    return next();
   }
-  return next();
 }
 
 module.exports = { usuarioExiste };

@@ -1,6 +1,5 @@
 import { ResumenFinanciero, FlujoDeEfectivo, EstadoDeResultados, Ingresos, CostosDirectos, GastosAdministrativos, Recursos } from "../js/clases.js";
 
-
 export function Calcular(a){
   //console.log("calculando valores");
   recursos.calcularValorRecursos();
@@ -174,22 +173,24 @@ agregarMes.addEventListener('click', () => {
 
 //Eliminacin de columnas
 eliminarMes.addEventListener('click', () => {
-  //Eliminacion de columna en cad parte del DOM
-  flujo.eliminarColumna();
-  estado.eliminarColumna();
-  ingresos.eliminarColumna();
-  costos.eliminarColumna();
-  gastos.eliminarColumna();
-  recursos.eliminarColumna();
 
-  //Eliminacion de columna en cada array correspondiente
-  mesesContemplados.pop();
-  conceptosIngresos.pop();
-  conceptosCostos.pop();
-  conceptosGastos.pop();
-  rolesRecursos.pop();
-  
-  Calcular();
+  if (window.confirm("¿Esta seguro de que desea eliminar la columna?")) {
+    //Eliminacion de columna en cad parte del DOM
+    flujo.eliminarColumna();
+    estado.eliminarColumna();
+    ingresos.eliminarColumna();
+    costos.eliminarColumna();
+    gastos.eliminarColumna();
+    recursos.eliminarColumna();
+    //Eliminacion de columna en cada array correspondiente
+    mesesContemplados.pop();
+    conceptosIngresos.pop();
+    conceptosCostos.pop();
+    conceptosGastos.pop();
+    rolesRecursos.pop();
+    //Calculo de nuevos valores tras eliminacion de columna
+    Calcular();
+  }  
 });
 
 
@@ -222,25 +223,29 @@ agregarIngreso.addEventListener('click', () => {
 });
 
 //eliminacion de una fila correspondiente a un ingreso
-eliminarIngreso.addEventListener('click', () => {  
-  //Si ya se selecciono un ingreso en la tabla se elimina dicha seleccion
-  if (ingresos.focusActual != null) {  
-    //Eliminacion del elemento Json correspondiente en cada arreglo de Jsons
-    conceptosIngresos.forEach(element => {
-      element.forEach((elemento, index) => {
-        if(elemento.concepto == ingresos.focusActual){
-          element.splice(index,1);
-        }        
-      }); 
-    });
-    //Eliminacion de la fila seleccionada en el DOM
-    ingresos.eliminarFila(ingresos.focusActual);
-  }
-  //si no, se solicita seleccionar un ingreso de la tabla
-  else
-    alert("selecciona un concepto de ingreso primero");  
+eliminarIngreso.addEventListener('click', () => { 
 
-    Calcular(); 
+  if (window.confirm("¿Esta seguro de que desea eliminar el ingreso?")) {
+    //Si ya se selecciono un ingreso en la tabla se elimina dicha seleccion
+    if (ingresos.focusActual != null) { 
+      //Eliminacion del elemento Json correspondiente en cada arreglo de Jsons
+      conceptosIngresos.forEach(element => {
+        element.forEach((elemento, index) => {
+          if(elemento.concepto == ingresos.focusActual){
+            element.splice(index,1);
+          }        
+        }); 
+      });
+      //Eliminacion de la fila seleccionada en el DOM
+      ingresos.eliminarFila(ingresos.focusActual);
+    }
+    //si no, se solicita seleccionar un ingreso de la tabla
+    else
+      alert("selecciona un concepto de ingreso primero");  
+
+    //Calculo de valores tras eliminacion del ingreso
+    Calcular();       
+  }  
 });
 
 //creacion de una fila correspondiente a un costo
@@ -278,21 +283,25 @@ agregarCosto.addEventListener('click', () => {
 });
 
 //eliminacion de una fila correspondiente a un costo
-eliminarCosto.addEventListener('click', () => {  
-  if (costos.focusActual != null) {  
-    conceptosCostos.forEach(element => {
-      element.forEach((elemento, index) => {
-        if(elemento.concepto == costos.focusActual){
-          element.splice(index,1);
-        }        
-      }); 
-    });
-    costos.eliminarFila(costos.focusActual);
-  }
-  else
-    alert("selecciona un concepto de costo primero");  
+eliminarCosto.addEventListener('click', () => {
 
-    Calcular(); 
+  if (window.confirm("¿Esta seguro de que desea eliminar el costo?")) {
+    if (costos.focusActual != null) {  
+      conceptosCostos.forEach(element => {
+        element.forEach((elemento, index) => {
+          if(elemento.concepto == costos.focusActual){
+            element.splice(index,1);
+          }        
+        }); 
+      });
+      costos.eliminarFila(costos.focusActual);
+    }
+    else
+      alert("selecciona un concepto de costo primero");  
+    
+    //Calculo de valores tras eliminacion de costo
+    Calcular();    
+  }  
 });
 
 //creacion de una fila correspondiente a un gasto
@@ -330,21 +339,25 @@ agregarGasto.addEventListener('click', () => {
 });
 
 //eliminacion de una fila correspondiente a un gasto
-eliminarGasto.addEventListener('click', () => {  
-  if (gastos.focusActual != null) {  
-    conceptosGastos.forEach(element => {
-      element.forEach((elemento, index) => {
-        if(elemento.concepto == gastos.focusActual){
-          element.splice(index,1);
-        }
-      }); 
-    });
-    gastos.eliminarFila(gastos.focusActual);
-  }
-  else
-    alert("selecciona un concepto de gasto primero");
+eliminarGasto.addEventListener('click', () => {
+
+  if (window.confirm("¿Esta seguro de que desea eliminar el gasto?")) {
+    if (gastos.focusActual != null) {  
+      conceptosGastos.forEach(element => {
+        element.forEach((elemento, index) => {
+          if(elemento.concepto == gastos.focusActual){
+            element.splice(index,1);
+          }
+        }); 
+      });
+      gastos.eliminarFila(gastos.focusActual);
+    }
+    else
+      alert("selecciona un concepto de gasto primero");
     
-  Calcular(); 
+    //Calculo de valores tras eliminacion de gasto  
+    Calcular();    
+  }  
 });
 
 //creacion de una fila correspondiente a un recurso
@@ -372,24 +385,28 @@ agregarRecurso.addEventListener('click', () => {
 });
 
 //eliminacion de una fila correspondiente a un recurso
-eliminarRecurso.addEventListener('click', () => {  
-  if (recursos.focusActual != null) {
-    rolesRecursos.forEach(element => {
-      element.forEach((elemento, index) => {
-        if(elemento.rol == recursos.focusActual){
-          element.splice(index,1);
-        }
-      }); 
-    });
-    recursos.eliminarFila(recursos.focusActual);
-  }
-  else
-    alert("selecciona un rol de recurso primero");  
-
-  Calcular(); 
+eliminarRecurso.addEventListener('click', () => {
+  if (window.confirm("¿Esta seguro de que desea eliminar el recurso?")) {
+    if (recursos.focusActual != null) {
+      rolesRecursos.forEach(element => {
+        element.forEach((elemento, index) => {
+          if(elemento.rol == recursos.focusActual){
+            element.splice(index,1);
+          }
+        }); 
+      });
+      recursos.eliminarFila(recursos.focusActual);
+    }
+    else
+      alert("selecciona un rol de recurso primero");  
+    
+      //Calculo de valores tras eliminacion de recurso
+    Calcular();    
+  }  
 });
 
 
+//Proceso de guardado en la base de datos mediante API
 guardarPresupuesto.addEventListener('click', () => {
   console.log(mesesContemplados);
   //console.log(conceptosIngresos);

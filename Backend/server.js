@@ -6,6 +6,7 @@ const sequelize = require('./db/conexion');
 
 //Rutas
 const usuariosRoute = require('./routes/usuarios.routes');
+const presupuestosRoute = require('./routes/presupuestos.routes');
 
 //configuración de middlewares globales
 app.use(express.json());
@@ -28,3 +29,4 @@ async function initServer(){
 
 initServer();
 usuariosRoute(app);
+presupuestosRoute(app);
