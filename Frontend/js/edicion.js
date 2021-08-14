@@ -425,3 +425,12 @@ eliminarPresupuesto.addEventListener('click', () => {
   flujo.guardarValor(mesesContemplados, "abcdadw");
   
 });
+
+
+document.getElementById('botonLogout').addEventListener('click', async () =>{
+  localStorage.removeItem('ActiveUser');
+});
+
+document.getElementById('botonPresupuestos').addEventListener('click', async () =>{
+  window.location.href = "../html/main.html";
+});

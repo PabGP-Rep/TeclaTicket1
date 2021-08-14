@@ -13,6 +13,17 @@ const crearPresupuesto = async (req, res) => {
   }
 }
 
+const buscarPresupuesto = async (req, res) => {
+  const idUsuario = req.body.idUsuario;
+  try {
+    let listaPresupuestos = await budgetService.searchBudget(idUsuario);
+    console.log("Consulta exitosa [CONTROLLER]");
+    res.status(200).json(listaPresupuestos);
+  } catch (error) {
+    return res.status(500);
+  }
+}
+
 const listarPresupuesto = async (req, res) => {
   try {
     let listaPresupuestos = await budgetService.listBudget();
@@ -34,4 +45,4 @@ const eliminarPresupuesto = async (req, res) =>{
   }
 }
 
-module.exports = { crearPresupuesto, listarPresupuesto, eliminarPresupuesto };
+module.exports = { crearPresupuesto, buscarPresupuesto, listarPresupuesto, eliminarPresupuesto };

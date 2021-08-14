@@ -1,6 +1,6 @@
-import { Usuario } from "../js/usuario.js";
+import { Usuario } from "./crud.js";
 
-if(JSON.parse(localStorage.getItem('ActiveUser'))!=null) {  
+if(JSON.parse(localStorage.getItem('ActiveUser'))!=null && JSON.parse(localStorage.getItem('ActiveUser')) != undefined ) { 
   console.log("Use esta logeado");
   window.location.href = "../html/main.html";  
 }else{
