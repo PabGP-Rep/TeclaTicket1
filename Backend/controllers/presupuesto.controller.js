@@ -35,9 +35,9 @@ const listarPresupuesto = async (req, res) => {
 }
 
 const eliminarPresupuesto = async (req, res) =>{
-  const { id, idUsuario, fechaCreacion, proyecto, versionn } = req.body;
+  const { id, idUsuario } = req.body;
   try {
-    let presupuesto = await budgetService.deleteBudget(id, idUsuario, fechaCreacion, proyecto, versionn);
+    let presupuesto = await budgetService.deleteBudget(id, idUsuario);
     console.log("Presupuesto eliminado correctamente [CONTROLLER]");
     res.status(200).json(presupuesto);
   } catch (error) {

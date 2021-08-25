@@ -32,17 +32,12 @@ class Budget {
     return presupuestos;  
   } 
 
-  deleteBudget = async (id, idUsuario, fechaCreacion, proyecto, versionn) => {
+  deleteBudget = async (id, idUsuario) => {
     try { 
-      console.log("Version");
-      console.log(versionn);     
       await Presupuesto.destroy({
         where: { 
           id: id,
-          idUsuario: idUsuario,
-          fechaCreacion: fechaCreacion,
-          proyecto: proyecto,
-          versionn: versionn
+          idUsuario: idUsuario          
         }  
       });  
       console.log("Presupuesto eliminado con exito [SERVICE]");

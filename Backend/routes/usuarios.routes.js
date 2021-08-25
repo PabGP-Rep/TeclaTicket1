@@ -1,12 +1,17 @@
-const { usuarioExiste } = require('../middlewares/index');
-const { crearUsuario, listarUsuarios, loginUsuario } = require('../controllers/usuario.controller');
+const { usuarioExiste, chkDatosLogin, chkDatosBusquedaId, chkDatosActualizacion, chkDatosEliminacion, chkDatosAlta, validarTokenAdmin, validarToken } = require('../middlewares/index');
+const { crearUsuario, listarUsuarios, loginUsuario, buscarUsuario, actualizarUsuario, eliminarUsuario } = require('../controllers/usuario.controller');
 
 module.exports = (app) => {
 
-  app.post('/usuario/crear', usuarioExiste, crearUsuario);
+  app.post('/usuario/create', usuarioExiste, chkDatosAlta, crearUsuario);
 
-  app.post('/usuario/login', loginUsuario);
+  app.post('/usuario/login', chkDatosLogin, loginUsuario);
 
-  app.get('/usuario/list', listarUsuarios);
+  app.get('/usuario/list', validarTokenAdmin, listarUsuarios);
 
+  app.post('/usuario/search', validarTokenAdmin, chkDatosBusquedaId, buscarUsuario);
+
+  app.post('/usuario/update', validarToken, chkDatosActualizacion, actualizarUsuario);
+
+  app.post('/usuario/delete', validarToken, chkDatosEliminacion, eliminarUsuario);
 }

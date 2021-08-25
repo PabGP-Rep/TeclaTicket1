@@ -1,5 +1,13 @@
 import { Usuario, Crud} from "./crud.js";
 
+if(JSON.parse(localStorage.getItem('ActiveUser'))!=null && JSON.parse(localStorage.getItem('ActiveUser')) != undefined ) { 
+  console.log("Use esta logeado");
+}else{
+  console.log("Aun no estas logeado");
+  window.location.href = "../html/login.html";
+}
+
+
 let usuario = JSON.parse(localStorage.getItem('ActiveUser'))[0].usuario;
 
 async function mostrarPresupuestos(){
@@ -29,6 +37,7 @@ if(JSON.parse(localStorage.getItem('ActiveUser')) == null){
 }
 
 document.getElementById('botonLogout').addEventListener('click', async () =>{
+  window.location.href = "../html/login.html";
   localStorage.removeItem('ActiveUser');
 });
 

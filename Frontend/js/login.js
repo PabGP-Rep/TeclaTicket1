@@ -10,8 +10,15 @@ if(JSON.parse(localStorage.getItem('ActiveUser'))!=null && JSON.parse(localStora
 document.getElementById('botonLogin').addEventListener('click', async () =>{
   let username = document.getElementById('userName').value;
   let pass = document.getElementById('userPass').value;
+  
+ 
   let usuario = await Usuario.login({ "nombre": username, "pass": pass });
-  if (usuario == 'Usuario o contraseña incorrectos') {
+  console.log(usuario);
+
+ 
+ 
+  
+  if (usuario == 'Error de autenticacion') {
     let message = document.getElementById('errorMessage');
     message.style.color = 'red';
     message.style.backgroundColor = 'darkblue';
@@ -21,5 +28,5 @@ document.getElementById('botonLogin').addEventListener('click', async () =>{
     localStorage.setItem('ActiveUser',JSON.stringify(usuario));
     window.location.href = "../html/main.html";
   }
-  
+
 });
