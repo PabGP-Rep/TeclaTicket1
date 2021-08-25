@@ -25,7 +25,7 @@ Presupuesto.init({
   },
 
   fechaCreacion: {
-    type: DataTypes.DATE,
+    type: DataTypes.DATEONLY,
     allowNull: false
   },
 
@@ -34,7 +34,7 @@ Presupuesto.init({
     allowNull: false
   },
 
-  version: {
+  versionn: {
     type: DataTypes.STRING,
     allowNull: false
   }

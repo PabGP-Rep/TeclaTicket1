@@ -13,3 +13,7 @@ body{
   background-image: url(../assets/images/bg2.jpg); 
   background-size: 100%;
 }
+
+table{
+  margin: auto;
+}

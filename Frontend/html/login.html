@@ -15,17 +15,19 @@
         <h1 class="h3 mb-3 fw-normal">Por favor inicie Sesión</h1>
     
         <div class="form-floating">
-          <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+          <input type="email" class="form-control" id="userName" placeholder="name@example.com">
           <label for="floatingInput">Nombre de usuario</label>
         </div>
         <div class="form-floating">
-          <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+          <input type="password" class="form-control" id="userPass" placeholder="Password">
           <label for="floatingPassword">Contraseña<a href=""></a></label>
         </div>
-        <div><h1></h1></div>
+        <div><h5 id="errorMessage"></h5></div>
 
-        <button class="w-100 btn btn-lg btn-primary" type="reset">Iniciar Sesión</button>
+        <button class="w-100 btn btn-lg btn-primary" type="reset" id="botonLogin">Iniciar Sesión</button>
       </form>
     </main>
+
+    <script src="../js/login.js" type="module"></script>
   </body>
 </html>

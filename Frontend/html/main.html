@@ -14,15 +14,15 @@
         <div class="container-fluid">
           <a class="navbar-brand" href="#">
             <img src="../assets/images/user.svg" alt="">
-            Usuario
-          </a>          
+          </a>
+          <h3 id="nombreUsuario" style="color: white;">Usuario</h3>      
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="#">Presupuestos</a>
               </li>              
               <li class="nav-item">
-                <a class="nav-link" href="../html/login.html" tabindex="-1" aria-disabled="true">Log-out</a>
+                <a class="nav-link" href="" tabindex="-1" aria-disabled="true" id="botonLogout">Log-out</a>
               </li>
             </ul>            
           </div>
@@ -34,8 +34,8 @@
       <h3>PRESUPUESTOS</h3>
     </div>
 
-    <div id="tablas">
-      <table class="table table-bordered table-dark text-center">
+    <div style="width: 80%; position: absolute; left: 6%;">
+      <table class="table table-bordered table-dark text-center" id="tablaPresupuestos">
         <thead>
           <tr>
             <th scope="col" style="width: 4%;">Id</th>
@@ -47,10 +47,12 @@
         <tbody id="contenido-tabla">
         </tbody>
       </table>
-      <button class="btn btn-success" type="button" role="button" style="margin-bottom: 15px;" id="boton-nuevo">Nuevo</button>
+      <button class="btn btn-success" type="button" role="button" style="margin-bottom: 15px;" id="botonNuevo">Nuevo</button>
       <button class="btn btn-warning" type="button" role="button" style="margin-bottom: 15px;" id="boton-nuevo">Editar</button>
       <button class="btn btn-danger" type="button" role="button" style="margin-bottom: 15px;" id="boton-nuevo">Eliminar</button>
       <button class="btn btn-primary" type="button" role="button" style="margin-bottom: 15px;" id="boton-nuevo">Enviar</button>
     </div>
+
+    <script src="../js/main.js" type="module"></script>
   </body>
 </html>
