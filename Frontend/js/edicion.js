@@ -1,11 +1,26 @@
-import { ResumenFinanciero, FlujoDeEfectivo, EstadoDeResultados, Ingresos, CostosDirectos, GastosAdministrativos, Recursos } from "../js/clases.js";
+import { ResumenFinanciero } from "./Presupuestos/resumen.js";
+import { Recursos } from "./Presupuestos/recursos.js";
+import { GastosAdministrativos } from "./Presupuestos/gastos.js";
+import { CostosDirectos } from "./Presupuestos/costos.js";
+import { Ingresos } from "./Presupuestos/ingresos.js";
+import { EstadoDeResultados } from "./Presupuestos/resultados.js";
+import { FlujoDeEfectivo } from "./Presupuestos/flujo.js";
+import { Crud } from "./crud.js";
 
+//Lista de meses utilizados para la creacion de titulos en cada tabla
+export const listaMeses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+let token = JSON.parse(localStorage.getItem('ActiveUser'))[1].token;
+
+let prespuesto = {"id": 0, "idUsuario": "", "Fecha": "", "Proyecto": "", "version": ""}
+//console.log(prespuesto);
+
+//console.log(prespuesto);
+//Funcion que indica el nuevo valor de un campo editable
+//asignada al event listener OnChange de los campos editables
 export function Calcular(a){
-  //console.log("calculando valores");
   recursos.calcularValorRecursos();
   recursos.calcularValorCostos();
   recursos.calcularValorResumen();
-
   gastos.calcularValor();
   costos.calcularValor();
   ingresos.calcularValor();
@@ -13,6 +28,7 @@ export function Calcular(a){
   flujo.calcularValor();
   resumen.calcularValor();
 }
+
 /*
 Instanciacion de los objetos definidos en clases.js
 pertenecientes a cada seccion del ticket
@@ -24,9 +40,6 @@ let ingresos = new Ingresos();
 let costos = new CostosDirectos();
 let gastos = new GastosAdministrativos();
 let recursos = new Recursos();
-
-//ejemplo de Json que se enviara al Back-End
-let prespuesto = {"id": "1", "idUsuario": "1313", "Fecha": "20-08-05", "Proyecto": "ventas o algo", "version": "1.0.0"}
 
 //Arreglo unidimencional de Json de los meses en el presupuesto
 let mesesContemplados = [];
@@ -61,6 +74,7 @@ const eliminarGasto = document.getElementById('botonEliminarGasto');
 const agregarRecurso = document.getElementById('botonAgregarRecurso');
 const eliminarRecurso = document.getElementById('botonEliminarRecurso');
 
+await inicializar();
 
 //Event listener encargado de agregar meses a las tablas de todas las secciones
 agregarMes.addEventListener('click', () => {
@@ -408,7 +422,8 @@ eliminarRecurso.addEventListener('click', () => {
 
 //Proceso de guardado en la base de datos mediante API
 guardarPresupuesto.addEventListener('click', () => {
-  console.log(mesesContemplados);
+  guardarMeses();
+  //await Crud.crearMes(prespuesto.id, );
   //console.log(conceptosIngresos);
   //console.log(conceptosCostos);
   //console.log(conceptosGastos);
@@ -422,15 +437,149 @@ eliminarPresupuesto.addEventListener('click', () => {
   //gastos.guardarValor(conceptosGastos);
   //costos.guardarValor(conceptosCostos);
   //ingresos.guardarValor(conceptosIngresos);
-  flujo.guardarValor(mesesContemplados, "abcdadw");
-  
+    
 });
 
 
 document.getElementById('botonLogout').addEventListener('click', async () =>{
   localStorage.removeItem('ActiveUser');
+  window.location.href = "../html/login.html";
 });
 
 document.getElementById('botonPresupuestos').addEventListener('click', async () =>{
   window.location.href = "../html/main.html";
 });
+
+async function inicializar(){
+  let budgetData = JSON.parse(sessionStorage.getItem('budgetData'));
+  if (budgetData != null) {
+    prespuesto = await Crud.buscarPresupuestoId(budgetData.id, token );
+    let meses = await Crud.buscarMes(budgetData.id, token );
+    if (meses != null) {
+      meses.forEach(element => {
+        if (element.inicial) {
+          cargarMes(element.nombre, element.cantidad)
+        }else{
+          cargarMes(element.nombre, element.cantidad)
+        }      
+      });           
+    }
+    document.getElementById('titulo').textContent = 'Proyecto: '+prespuesto.proyecto;
+  }
+}
+
+async function guardarMeses(){
+  flujo.guardarValor(mesesContemplados, prespuesto.id);
+  for (let index = 0; index < mesesContemplados.length; index++) {
+    const element = mesesContemplados[index];
+    //console.log("Guarde: "+element.idPresupuesto+" "+element.inicial+" "+element.nombre+" "+element.cantidad);
+    await Crud.crearMes(element.idPresupuesto,element.inicial,element.nombre,element.cantidad,token);
+  }
+}
+
+function cargarMes(mes, cantidad){  
+  if (mesesContemplados.length == 0) {
+    let inicial = 0;
+    listaMeses.forEach((element,index) => {
+      if (element == mes) {
+        inicial = index+1;        
+      }      
+    });
+
+    //modificacion del DOM de la seccion flujo de efectivo
+    let respuesta = flujo.agregarColumnaInicial(prespuesto.id, inicial-1, cantidad);
+    //guardado del archivo Json del mes generado
+    mesesContemplados.push(respuesta);
+
+    //modificacion del DOM de la seccion Estado de Resultados
+    estado.agregarColumnaInicial(inicial-1);
+
+    //modificacion del DOM de la seccion Ingresos
+    let respIngresos = ingresos.agregarColumnaInicial(inicial-1);
+    
+    //guardado de los archivos Json de los conceptos de Ingresos generados    
+    if (conceptosIngresos.length == 0) {
+      //Si el array esta vacio se hace push con el arreglo completo que regresa la funcion
+      conceptosIngresos.push(respIngresos);            
+    } else{
+      //Si hay un arreglo dentro del arreglo se hace push al arreglo existente con cada elemento
+      //del arreglo que regresa la funcion
+      respIngresos.forEach(element => {
+        conceptosIngresos[0].push(element);       
+      });  
+    }
+
+    //modificacion del DOM de la seccion Costos Directos
+    let respCostos = costos.agregarColumnaInicial(inicial-1, costos.opcionActual);
+
+    //guardado de los archivos Json de los conceptos de Costos generados   
+    if (conceptosCostos.length == 0) {
+      //Si el array esta vacio se hace push con el arreglo completo que regresa la funcion
+      conceptosCostos.push(respCostos);            
+    } else{
+      //Si hay un arreglo dentro del arreglo se hace push al arreglo existente con cada elemento
+      //del arreglo que regresa la funcion
+      respCostos.forEach(element => {
+        conceptosCostos[0].push(element);       
+      });  
+    }
+
+    //modificacion del DOM de la seccion Gastos Administrativos
+    let respGastos = gastos.agregarColumnaInicial(inicial-1, gastos.opcionActual);
+
+    //guardado de los archivos Json de los conceptos de Gastos generados
+    if (conceptosGastos.length == 0) {
+      //Si el array esta vacio se hace push con el arreglo completo que regresa la funcion
+      conceptosGastos.push(respGastos);            
+    } else{
+      //Si hay un arreglo dentro del arreglo se hace push al arreglo existente con cada elemento
+      //del arreglo que regresa la funcion
+      respGastos.forEach(element => {
+        conceptosGastos[0].push(element);       
+      });  
+    }
+
+    //modificacion del DOM de la seccion Asignacion de Recursos
+    let respRecursos = recursos.agregarColumnaInicial(inicial-1);
+
+    //guardado de los archivos Json de los conceptos de Recursos generados
+    if (rolesRecursos.length == 0) {
+      //Si no hay arreglos dentro del arreglo se hace push con el arreglo completo que regresa la funcion
+      rolesRecursos.push(respRecursos);            
+    } else{
+      //Si hay un arreglo dentro del arreglo se hace push al arreglo existente con cada elemento
+      //del arreglo que regresa la funcion
+      respRecursos.forEach(element => {
+        rolesRecursos[0].push(element);       
+      });  
+    }    
+  } 
+   //Si el array de meses no esta vacio se agregan los meses posteriores al inicial 
+  else{  
+
+    let respuesta = flujo.agregarColumna(prespuesto.id, cantidad);
+    mesesContemplados.push(respuesta);
+
+    estado.agregarColumna();
+    
+    let respIngresos = ingresos.agregarColumna();    
+    conceptosIngresos.push(respIngresos);
+
+    
+    let respCostos = costos.agregarColumna(costos.opcionActual); 
+    conceptosCostos.push(respCostos);
+
+    
+    let respGastos = gastos.agregarColumna(gastos.opcionActual);
+    conceptosGastos.push(respGastos);
+
+   
+    let respRecursos = recursos.agregarColumna();
+    rolesRecursos.push(respRecursos);
+    
+  }
+  Calcular(); 
+}
+
+
+

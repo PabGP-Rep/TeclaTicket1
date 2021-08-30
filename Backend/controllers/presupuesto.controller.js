@@ -1,13 +1,12 @@
 const Budget = require('../services/presupuesto.service');
-
 const budgetService = new Budget();
 
 const crearPresupuesto = async (req, res) => {
   const { idUsuario, fechaCreacion, proyecto, versionn } = req.body;
   try {
-    await budgetService.createBudget(idUsuario, fechaCreacion, proyecto, versionn);
+    presupuesto = await budgetService.createBudget(idUsuario, fechaCreacion, proyecto, versionn);
     console.log("Presupuesto creado con exito [CONTROLLER]");
-    res.status(201).json('Presupuesto creado con Exito');
+    res.status(201).json(presupuesto);
   } catch (error) {
     return res.status(500);
   }
@@ -19,6 +18,17 @@ const buscarPresupuesto = async (req, res) => {
     let listaPresupuestos = await budgetService.searchBudget(idUsuario);
     console.log("Consulta exitosa [CONTROLLER]");
     res.status(200).json(listaPresupuestos);
+  } catch (error) {
+    return res.status(500);
+  }
+}
+
+const buscarPresupuestoId = async (req, res) => {
+  const id = req.body.id;
+  try {
+    let presupuesto = await budgetService.searchBudgetId(id);
+    console.log("Consulta exitosa [CONTROLLER]");
+    res.status(200).json(presupuesto);
   } catch (error) {
     return res.status(500);
   }
@@ -45,4 +55,4 @@ const eliminarPresupuesto = async (req, res) =>{
   }
 }
 
-module.exports = { crearPresupuesto, buscarPresupuesto, listarPresupuesto, eliminarPresupuesto };
+module.exports = { crearPresupuesto, buscarPresupuesto, buscarPresupuestoId, listarPresupuesto, eliminarPresupuesto };

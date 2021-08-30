@@ -1,5 +1,6 @@
 const { DataTypes, Model, Deferrable } = require('sequelize');
 const sequelize = require('../db/conexion');
+const Mes = require('./mes.model');
 const Usuario = require('./usuario.model');
 
 class Presupuesto extends Model {}
@@ -47,5 +48,8 @@ Presupuesto.init({
   updatedAt: false,
   sequelize,
 });
+
+//Presupuesto.belongsTo(Usuario, {foreignKey: 'idUsuario', onDelete: 'CASCADE'} );
+//Presupuesto.hasMany(Mes, {foreignKey: 'idPresupuesto', onDelete: 'CASCADE'});
 
 module.exports = Presupuesto;

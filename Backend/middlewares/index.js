@@ -1,6 +1,9 @@
 const Joi = require('joi');
 const { descubrirToken } = require('../services/jwt.service');
 const { loginDTO, altaUsuarioDTO, busquedaUsuarioIdDTO, actualizacionUsuarioDTO, eliminacionUsuarioDTO } = require('../dto/usuario.dto')
+const { altaPresupuestoDTO, busquedaPresupuestoDTO, eliminacionPresupuestoDTO, busquedaPresupuestoIdDTO } = require('../dto/presupuesto.dto')
+const { altaMesDTO, busquedaMesDTO, busquedaMesIdDTO, eliminacionMesDTO } = require('../dto/mes.dto');
+
 const Usuario = require('../models/usuario.model');
 
 //TOKEN
@@ -114,11 +117,83 @@ const chkDatosEliminacion = async (req, res, next) => {
   }
 }
 
+//Presupuesto
+const chkDatosAltaPresupuesto = async (req, res, next) => {
+  try {
+    await Joi.attempt(req.body, altaPresupuestoDTO, "Error:");
+    return next();    
+  } catch (error) {
+    res.status(500).json({error: error.message});  
+  }
+}
+
+const chkDatosBusquedaPresupuesto = async (req, res, next) => {
+  try {
+    await Joi.attempt(req.body, busquedaPresupuestoDTO, "Error");
+    return next();    
+  } catch (error) {
+    res.status(500).json({error: error.message});  
+  }
+}
+
+const chkDatosBusquedaPresupuestoId = async (req, res, next) => {
+  try {
+    await Joi.attempt(req.body, busquedaPresupuestoIdDTO, "Error");
+    return next();    
+  } catch (error) {
+    res.status(500).json({error: error.message});  
+  }
+}
+
+const chkDatosEliminacionPresupuesto = async (req, res, next) => {
+  try {
+    await Joi.attempt(req.body, eliminacionPresupuestoDTO, "Error:");
+    return next();    
+  } catch (error) {
+    res.status(500).json({error: error.message});  
+  }
+}
+
+//Mes
+const chkDatosAltaMes = async (req, res, next) => {
+  try {
+    await Joi.attempt(req.body, altaMesDTO, "Error:");
+    return next();    
+  } catch (error) {
+    res.status(500).json({error: error.message});  
+  }
+}
+
+const chkDatosBusquedaMes = async (req, res, next) => {
+  try {
+    await Joi.attempt(req.body, busquedaMesDTO, "Error");
+    return next();    
+  } catch (error) {
+    res.status(500).json({error: error.message});  
+  }
+}
+
+const chkDatosBusquedaMesId = async (req, res, next) => {
+  try {
+    await Joi.attempt(req.body, busquedaMesIdDTO, "Error");
+    return next();    
+  } catch (error) {
+    res.status(500).json({error: error.message});  
+  }
+}
+
+const chkDatosEliminacionMes = async (req, res, next) => {
+  try {
+    await Joi.attempt(req.body, eliminacionMesDTO, "Error:");
+    return next();    
+  } catch (error) {
+    res.status(500).json({error: error.message});  
+  }
+}
 
 module.exports = { 
   usuarioExiste, validarToken, chkDatosLogin, chkDatosAlta, chkDatosBusquedaId,
-  chkDatosActualizacion, chkDatosEliminacion, validarTokenAdmin
-
-
-
+  chkDatosActualizacion, chkDatosEliminacion, validarTokenAdmin, chkDatosAltaPresupuesto,
+  chkDatosBusquedaPresupuesto, chkDatosEliminacionPresupuesto, chkDatosBusquedaPresupuestoId,
+  chkDatosAltaMes, chkDatosBusquedaMes, chkDatosBusquedaMesId, chkDatosEliminacionMes
 };

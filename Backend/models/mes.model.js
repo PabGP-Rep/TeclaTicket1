@@ -32,6 +32,12 @@ Mes.init({
   nombre: {
     type: DataTypes.STRING,
     allowNull: false
+  },
+
+  cantidad: {
+    type: DataTypes.FLOAT,
+    defaultValue: 0,
+    allowNull: false
   }
 }, {
   //Opciones extra del modelo
@@ -42,5 +48,7 @@ Mes.init({
   updatedAt: false,
   sequelize,
 });
+
+//Mes.belongsTo(Presupuesto, {foreignKey: '', onDelete: 'CASCADE'} );
 
 module.exports = Mes;

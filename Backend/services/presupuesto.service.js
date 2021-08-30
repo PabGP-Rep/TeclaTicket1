@@ -4,8 +4,8 @@ class Budget {
 
   createBudget = async (idUsuario, fechaCreacion, proyecto, versionn) => {
     try {
-      console.log(proyecto);
-      const presupuesto = await Presupuesto.create({ idUsuario: idUsuario, fechaCreacion: fechaCreacion, proyecto: proyecto, versionn: versionn });
+      const presupuesto = await Presupuesto.create({ 
+        idUsuario: idUsuario, fechaCreacion: fechaCreacion, proyecto: proyecto, versionn: versionn });
       console.log("Presupuesto creado con exito [SERVICE]");
       return presupuesto;
     } catch (error) {
@@ -18,8 +18,18 @@ class Budget {
     try {
       let encontrado = await Presupuesto.findAll({ where: { idUsuario: idUsuario } });
       console.log("Perfil encontrado con exito [SERVICE]");       
-      return encontrado;        
-      
+      return encontrado;
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
+  }
+
+  searchBudgetId = async (id) => {
+    try {
+      let encontrado = await Presupuesto.findOne({ where: { id: id } });
+      console.log("Perfil encontrado con exito [SERVICE]");
+      return encontrado;
     } catch (error) {
       console.log(error);
       return error;

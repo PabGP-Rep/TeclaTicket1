@@ -13,10 +13,7 @@ document.getElementById('botonLogin').addEventListener('click', async () =>{
   
  
   let usuario = await Usuario.login({ "nombre": username, "pass": pass });
-  console.log(usuario);
-
- 
- 
+  console.log(usuario); 
   
   if (usuario == 'Error de autenticacion') {
     let message = document.getElementById('errorMessage');
